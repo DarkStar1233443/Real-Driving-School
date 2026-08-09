@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS Hub - Home</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .hero-section {
+            text-align: center;
+            padding: 4rem 1rem;
+            margin-bottom: 2rem;
+        }
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-cyan));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: shine 4s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        .hub-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .hub-card {
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+        }
+        .hub-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">RDS HUB</div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="cars.html">Cars</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="market.html">Market</a></li>
+            <li id="logout-nav" class="admin-only"><a href="#" id="logout-btn">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">Welcome to RDS Hub</h1>
+            <p class="page-subtitle" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">
+                Your ultimate companion for car values, active multiplayer events, and community trading.
+            </p>
+        </div>
+
+        <div class="hub-grid">
+            <a href="cars.html" class="glass-panel hub-card">
+                <div class="hub-icon">🏎️</div>
+                <h2 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">Vehicle Database</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Check stage prices, modifiers, and coating values.</p>
+            </a>
+
+            <a href="events.html" class="glass-panel hub-card">
+                <div class="hub-icon">🏁</div>
+                <h2 style="color: var(--accent-purple); margin-bottom: 0.5rem;">Live Events</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">See active grinds, track requirements, and game modes.</p>
+            </a>
+
+            <a href="market.html" class="glass-panel hub-card">
+                <div class="hub-icon">🤝</div>
+                <h2 style="color: var(--accent-green); margin-bottom: 0.5rem;">Marketplace</h2>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Buy, sell, and trade with the community.</p>
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, onAuthStateChanged, signOut } from './js/firebase-config.js';
+
+        // Check Admin Status for navbar
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            } else {
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            }
+        });
+
+        // Logout Logic
+        const logoutBtn = document.getElementById('logout-btn');
+        if(logoutBtn) {
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                signOut(auth).then(() => window.location.reload());
+            });
+        }
+    </script>
+</body>
+</html>

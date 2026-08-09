@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS Hub - Admin Access</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-brand">RDS HUB</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="cars.html">Cars</a></li>
+            <li><a href="events.html">Events</a></li>
+            <li><a href="market.html">Market</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" style="max-width: 450px; margin-top: 5rem;">
+        <div class="glass-panel">
+            <h2 class="page-title" style="text-align: center;">Admin Portal</h2>
+            <p class="page-subtitle" style="text-align: center;">Sign in to manage cars & events</p>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="admin-email">Email Address</label>
+                    <input type="email" id="admin-email" class="glass-input" required placeholder="admin@domain.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" class="glass-input" required placeholder="••••••••">
+                </div>
+
+                <div id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></div>
+
+                <button type="submit" class="btn-primary" style="width: 100%;">Authenticate</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './js/firebase-config.js';
+
+        const loginForm = document.getElementById('login-form');
+        const errorDiv = document.getElementById('login-error');
+
+        // Redirect to cars.html if already logged in
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'cars.html';
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.style.display = 'none';
+
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'cars.html';
+            } catch (error) {
+                errorDiv.textContent = 'Invalid credentials. Please check your details.';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
