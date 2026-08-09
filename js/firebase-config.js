@@ -1,9 +1,8 @@
-// Import Firebase SDKs via CDN for browser compatibility
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, getDocs, addDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-// Your exact web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBlRiz74eFt5zWOIowVEOgxQEAHuLfM3e0",
   authDomain: "rds-a95fc.firebaseapp.com",
@@ -14,24 +13,13 @@ const firebaseConfig = {
   measurementId: "G-W84EM7C47F"
 };
 
-// Initialize Firebase App, Auth, and Firestore Database
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
-// Export everything so your other HTML files can use it securely
 export { 
-    auth, 
-    db, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signOut, 
-    collection, 
-    doc, 
-    setDoc, 
-    onSnapshot, 
-    updateDoc, 
-    deleteDoc, 
-    getDocs, 
-    addDoc 
+    auth, db, storage, ref, uploadBytes, getDownloadURL,
+    signInWithEmailAndPassword, onAuthStateChanged, signOut, 
+    collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, getDocs, addDoc, getDoc 
 };
