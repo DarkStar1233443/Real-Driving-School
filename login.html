@@ -3,72 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RDS Hub - Admin Access</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Owner Portal - Restricted Access</title>
+    <style>
+        /* Sleek, dark minimalist UI */
+        :root {
+            --bg: #09090b;
+            --surface: #18181b;
+            --border: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .auth-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2.5rem;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .sleek-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border 0.2s;
+        }
+        .sleek-input:focus {
+            border-color: var(--accent);
+        }
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            margin-top: 1rem;
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        /* Device Approval Queue UI */
+        .approval-queue {
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+        }
+        .device-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .device-info {
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        .device-info strong {
+            color: var(--text-muted);
+        }
+        .action-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-accept { 
+            background: rgba(16, 185, 129, 0.1); 
+            color: var(--success); 
+            border: 1px solid var(--success); 
+        }
+        .btn-reject { 
+            background: rgba(239, 68, 68, 0.1); 
+            color: var(--danger); 
+            border: 1px solid var(--danger); 
+        }
+        .btn-accept:hover, .btn-reject:hover {
+            background: transparent;
+        }
+    </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-brand">RDS HUB</div>
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="cars.html">Cars</a></li>
-            <li><a href="events.html">Events</a></li>
-            <li><a href="market.html">Market</a></li>
-        </ul>
-    </nav>
+    <div class="auth-container">
+        <div class="header">
+            <h2 style="margin:0 0 0.5rem 0;">System Terminal</h2>
+            <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Secure access requires OTP verification.</p>
+        </div>
 
-    <div class="container" style="max-width: 450px; margin-top: 5rem;">
-        <div class="glass-panel">
-            <h2 class="page-title" style="text-align: center;">Admin Portal</h2>
-            <p class="page-subtitle" style="text-align: center;">Sign in to manage cars & events</p>
+        <!-- The OTP Login Form -->
+        <form id="owner-login">
+            <div class="input-group">
+                <label>System Administrator</label>
+                <input type="email" class="sleek-input" value="pennabadicharith@gmail.com" readonly>
+            </div>
             
-            <form id="login-form">
-                <div class="form-group">
-                    <label for="admin-email">Email Address</label>
-                    <input type="email" id="admin-email" class="glass-input" required placeholder="admin@domain.com">
+            <div class="input-group">
+                <label>6-Digit Authentication Code</label>
+                <input type="text" class="sleek-input" placeholder="• • • • • •" maxlength="6" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Verify & Initialize</button>
+        </form>
+
+        <!-- The Admin Approval Queue (Would be visible after login) -->
+        <div class="approval-queue">
+            <h3 style="font-size: 1rem; margin-top:0; color: var(--accent);">Pending Access Requests</h3>
+            
+            <div class="device-card">
+                <div class="device-info">
+                    <strong>Alias:</strong> ShadowRacer99<br>
+                    <strong>Device Profile:</strong> iPhone 14 Pro, Safari<br>
+                    <strong>Connection:</strong> Hyderabad, IN
                 </div>
-
-                <div class="form-group">
-                    <label for="admin-password">Password</label>
-                    <input type="password" id="admin-password" class="glass-input" required placeholder="••••••••">
+                <div class="action-row">
+                    <button class="btn btn-accept">Authorize</button>
+                    <button class="btn btn-reject">Deny Access</button>
                 </div>
-
-                <div id="login-error" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 1rem; display: none;"></div>
-
-                <button type="submit" class="btn-primary" style="width: 100%;">Authenticate</button>
-            </form>
+            </div>
         </div>
     </div>
 
-    <script type="module">
-        import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './js/firebase-config.js';
-
-        const loginForm = document.getElementById('login-form');
-        const errorDiv = document.getElementById('login-error');
-
-        // Redirect to cars.html if already logged in
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'cars.html';
-            }
-        });
-
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            errorDiv.style.display = 'none';
-
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = 'cars.html';
-            } catch (error) {
-                errorDiv.textContent = 'Invalid credentials. Please check your details.';
-                errorDiv.style.display = 'block';
-            }
-        });
-    </script>
 </body>
 </html>
