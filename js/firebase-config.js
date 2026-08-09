@@ -1,23 +1,9 @@
-// Import Firebase SDK modules directly from Google CDN (Works natively on GitHub Pages)
+// Import Firebase SDKs via CDN for browser compatibility
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-    getFirestore, 
-    collection, 
-    addDoc, 
-    getDocs, 
-    doc, 
-    updateDoc, 
-    deleteDoc, 
-    onSnapshot 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// Your Firebase Configuration
+// Your exact web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBlRiz74eFt5zWOIowVEOgxQEAHuLfM3e0",
   authDomain: "rds-a95fc.firebaseapp.com",
@@ -28,23 +14,24 @@ const firebaseConfig = {
   measurementId: "G-W84EM7C47F"
 };
 
-// Initialize Firebase App & Services
+// Initialize Firebase App, Auth, and Firestore Database
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-// Export utilities for app logic
+// Export everything so your other HTML files can use it securely
 export { 
-    db, 
     auth, 
+    db, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut, 
     collection, 
-    addDoc, 
-    getDocs, 
     doc, 
+    setDoc, 
+    onSnapshot, 
     updateDoc, 
     deleteDoc, 
-    onSnapshot, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged 
+    getDocs, 
+    addDoc 
 };
