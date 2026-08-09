@@ -3,110 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RDS Hub - Home</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>RDS Hub - Central Dashboard</title>
     <style>
-        .hero-section {
-            text-align: center;
-            padding: 4rem 1rem;
-            margin-bottom: 2rem;
+        /* ==========================================================================
+           Modern Dashboard UI - Dark Theme
+           ========================================================================== */
+        :root {
+            --bg-base: #09090b;
+            --bg-surface: #18181b;
+            --bg-surface-hover: #27272a;
+            --border: #3f3f46;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.4);
+            --danger: #ef4444;
+            --success: #10b981;
+            --glass-bg: rgba(24, 24, 27, 0.7);
+            --blur: blur(12px);
         }
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple), var(--accent-cyan));
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-            animation: shine 4s linear infinite;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, sans-serif;
         }
-        @keyframes shine {
-            to { background-position: 200% center; }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
-        .hub-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-        .hub-card {
-            text-align: center;
-            text-decoration: none;
-            color: inherit;
+
+        /* --- Sidebar Navigation (Desktop) --- */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-surface);
+            border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 2rem;
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
-        .hub-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+
+        .brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .brand span {
+            color: var(--accent);
+        }
+
+        .nav-items {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex-grow: 1;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--bg-surface-hover);
+            color: var(--text-main);
+        }
+
+        .nav-btn.active {
+            background-color: var(--accent);
+            color: #fff;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .admin-link {
+            margin-top: auto;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            transition: color 0.2s;
+        }
+        
+        .admin-link:hover { color: var(--accent); }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            overflow-y: auto;
+            background: var(--bg-base);
+            position: relative;
+        }
+
+        /* Mobile Header (Hidden on Desktop) */
+        .mobile-header {
+            display: none;
+            padding: 1rem 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* View Containers */
+        .view-section {
+            display: none;
+            padding: 2rem 3rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Generic UI Elements for Sections */
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        .page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+        .page-header p { color: var(--text-muted); }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .glass-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .glass-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                transform: translateX(-100%); /* Hidden by default */
+            }
+
+            .sidebar.open {
+                transform: translateX(0); /* Slide in */
+                box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+            }
+
+            .mobile-header {
+                display: flex; /* Show header on mobile */
+            }
+
+            .view-section {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="nav-brand">RDS HUB</div>
-        <ul class="nav-links">
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="cars.html">Cars</a></li>
-            <li><a href="events.html">Events</a></li>
-            <li><a href="market.html">Market</a></li>
-            <li id="logout-nav" class="admin-only"><a href="#" id="logout-btn">Logout</a></li>
-        </ul>
-    </nav>
-
-    <div class="container">
-        <div class="hero-section">
-            <h1 class="hero-title">Welcome to RDS Hub</h1>
-            <p class="page-subtitle" style="font-size: 1.2rem; max-width: 600px; margin: 0 auto;">
-                Your ultimate companion for car values, active multiplayer events, and community trading.
-            </p>
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">RDS <span>HUB</span></div>
+        <div class="nav-items">
+            <button class="nav-btn active" onclick="switchView('home')">🏠 Overview</button>
+            <button class="nav-btn" onclick="switchView('cars')">🏎️ Vehicle Database</button>
+            <button class="nav-btn" onclick="switchView('events')">🏁 Live Events</button>
+            <button class="nav-btn" onclick="switchView('market')">🤝 Marketplace</button>
         </div>
+        <a href="login.html" class="admin-link">Admin Portal Login</a>
+    </aside>
 
-        <div class="hub-grid">
-            <a href="cars.html" class="glass-panel hub-card">
-                <div class="hub-icon">🏎️</div>
-                <h2 style="color: var(--accent-cyan); margin-bottom: 0.5rem;">Vehicle Database</h2>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Check stage prices, modifiers, and coating values.</p>
-            </a>
+    <!-- Main Content Area -->
+    <main class="main-content">
+        
+        <!-- Mobile Header (Only visible on small screens) -->
+        <header class="mobile-header">
+            <div class="brand" style="margin:0; font-size: 1.2rem;">RDS <span>HUB</span></div>
+            <button class="hamburger" onclick="toggleMobileMenu()">☰</button>
+        </header>
 
-            <a href="events.html" class="glass-panel hub-card">
-                <div class="hub-icon">🏁</div>
-                <h2 style="color: var(--accent-purple); margin-bottom: 0.5rem;">Live Events</h2>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">See active grinds, track requirements, and game modes.</p>
-            </a>
+        <!-- 1. HOME VIEW -->
+        <section id="home-view" class="view-section active">
+            <div class="page-header">
+                <h1>Welcome to RDS Hub</h1>
+                <p>Your central command for Real Driving School data.</p>
+            </div>
+            <div class="card-grid">
+                <div class="glass-card" onclick="switchView('cars')" style="cursor:pointer; text-align:center;">
+                    <h2 style="color: var(--accent); margin-bottom: 0.5rem;">Database</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Check stage prices and modifiers.</p>
+                </div>
+                <div class="glass-card" onclick="switchView('market')" style="cursor:pointer; text-align:center;">
+                    <h2 style="color: var(--success); margin-bottom: 0.5rem;">Trading</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Access the community marketplace.</p>
+                </div>
+            </div>
+        </section>
 
-            <a href="market.html" class="glass-panel hub-card">
-                <div class="hub-icon">🤝</div>
-                <h2 style="color: var(--accent-green); margin-bottom: 0.5rem;">Marketplace</h2>
-                <p style="color: var(--text-secondary); font-size: 0.9rem;">Buy, sell, and trade with the community.</p>
-            </a>
-        </div>
-    </div>
+        <!-- 2. CARS VIEW -->
+        <section id="cars-view" class="view-section">
+            <div class="page-header">
+                <h1>Vehicle Database</h1>
+                <p>Estimated prices and performance metrics.</p>
+            </div>
+            <div class="card-grid" id="cars-container">
+                <!-- Javascript will inject Firebase cars here -->
+                <div class="glass-card">
+                    <h3 style="margin-bottom:1rem;">Example Car Load</h3>
+                    <p style="color: var(--text-muted);">Firebase connection required to load live data.</p>
+                </div>
+            </div>
+        </section>
 
-    <script type="module">
-        import { auth, onAuthStateChanged, signOut } from './js/firebase-config.js';
+        <!-- 3. EVENTS VIEW -->
+        <section id="events-view" class="view-section">
+            <div class="page-header">
+                <h1>Live Events</h1>
+                <p>Active grinds, multiplayer modes, and track rules.</p>
+            </div>
+            <div class="card-grid" id="events-container">
+                <!-- Javascript will inject Firebase events here -->
+                <p style="color: var(--text-muted);">Loading active events...</p>
+            </div>
+        </section>
 
-        // Check Admin Status for navbar
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
-            } else {
-                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-            }
-        });
+        <!-- 4. MARKET VIEW -->
+        <section id="market-view" class="view-section">
+            <div class="page-header">
+                <h1>Marketplace</h1>
+                <p>Community WTB and WTS listings.</p>
+            </div>
+            <div class="glass-card" style="margin-bottom: 2rem;">
+                <h3 style="color: #facc15; margin-bottom: 0.5rem;">🛠️ Auctions (In Development)</h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Live bidding system coming soon.</p>
+            </div>
+            <div id="market-container">
+                <!-- Javascript will inject Firebase market data here -->
+                <p style="color: var(--text-muted);">Loading market listings...</p>
+            </div>
+        </section>
 
-        // Logout Logic
-        const logoutBtn = document.getElementById('logout-btn');
-        if(logoutBtn) {
-            logoutBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                signOut(auth).then(() => window.location.reload());
+    </main>
+
+    <!-- UI Logic Script -->
+    <script>
+        // Switch between tabs
+        function switchView(viewName) {
+            // 1. Hide all views
+            document.querySelectorAll('.view-section').forEach(section => {
+                section.classList.remove('active');
             });
+            // 2. Remove 'active' state from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 3. Show targeted view
+            document.getElementById(viewName + '-view').classList.add('active');
+            
+            // 4. Highlight the correct nav button
+            const buttons = document.querySelectorAll('.nav-btn');
+            if(viewName === 'home') buttons[0].classList.add('active');
+            if(viewName === 'cars') buttons[1].classList.add('active');
+            if(viewName === 'events') buttons[2].classList.add('active');
+            if(viewName === 'market') buttons[3].classList.add('active');
+
+            // 5. Close mobile menu if it's open
+            const sidebar = document.getElementById('sidebar');
+            if(sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        }
+
+        // Toggle mobile sidebar
+        function toggleMobileMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
     </script>
 </body>
