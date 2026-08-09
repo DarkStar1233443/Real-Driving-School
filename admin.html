@@ -5,29 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RDS Hub | Control Room</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         :root {
-            --bg-main: #050505; --bg-sidebar: #0a0a0a; --bg-card: #121212; --border: #262626;
-            --text-primary: #f5f5f5; --text-secondary: #a3a3a3;
-            --accent: #3b82f6; --success: #10b981; --danger: #ef4444;
+            --bg-main: #050505; --bg-sidebar: #0a0a0a; --bg-card: #111111; --border: #262626;
+            --text-primary: #ffffff; --text-secondary: #a3a3a3;
+            --accent: #3B82F6; --success: #10b981; --danger: #ef4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Full Screen Overlays */
         .overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
         .hidden { display: none !important; }
 
         /* Sidebar Navigation */
-        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; }
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; }
         .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
-        .badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; display: inline-block; margin-bottom: 2rem; }
-        .badge-owner { background: rgba(16,185,129,0.2); color: var(--success); }
-        .badge-admin { background: rgba(59,130,246,0.2); color: var(--accent); }
+        .badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; display: inline-block; margin-bottom: 2rem; border: 1px solid; }
+        .badge-owner { background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.3); }
+        .badge-admin { background: rgba(59,130,246,0.1); color: var(--accent); border-color: rgba(59,130,246,0.3); }
 
         .nav-link { display: none; padding: 1rem; color: var(--text-secondary); border-radius: 8px; font-weight: 500; cursor: pointer; margin-bottom: 0.5rem; transition: 0.2s; }
         .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
-        .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
+        .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
         
         .btn-logout { margin-top: auto; padding: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
@@ -41,31 +40,36 @@
         .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
         .header p { color: var(--text-secondary); margin-bottom: 2rem; }
 
-        /* Panels & Forms */
-        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .input-field { width: 100%; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; outline: none; }
-        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        /* Massive Form Grids */
+        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .form-grid.full { grid-template-columns: 1fr; }
+        .form-grid.stages { grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+        
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem; text-transform: uppercase; }
+        .input-field { width: 100%; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; outline: none; }
+        .input-field:focus { border-color: var(--accent); }
+        
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; justify-content: center; align-items: center; }
         .btn-primary { background: var(--accent); color: white; }
-        .btn-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
-        .btn-danger { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
-        .btn-success:hover { background: var(--success); color: white; }
+        .btn-primary:hover { background: #2563eb; }
+        .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
         .btn-danger:hover { background: var(--danger); color: white; }
 
-        .request-item, .data-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; background: var(--bg-main); }
+        .list-img { width: 60px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 1rem; background: #1a1a1a; }
+        
+        .section-divider { border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 2rem 0 1rem 0; font-size: 1.1rem; color: var(--accent); font-weight: 600; }
     </style>
 </head>
 <body>
 
-    <!-- Waiting Room Overlay for Admins -->
     <div id="waiting-room" class="overlay hidden">
-        <div style="width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 2rem;"></div>
         <h2 style="margin-bottom: 0.5rem;">Awaiting Clearance</h2>
-        <p style="color: var(--text-secondary); max-width: 300px; margin-bottom: 2rem;">Your device has been logged. Waiting for the Owner to authorize your session.</p>
-        <button id="btn-cancel-wait" class="btn btn-danger">Cancel Login</button>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        <p style="color: var(--text-secondary); max-width: 300px; margin-bottom: 2rem;">Waiting for Owner Authorization.</p>
+        <button class="btn btn-danger" onclick="signOutAuth()">Cancel Login</button>
     </div>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">CONTROL <span>ROOM</span></div>
         <div id="user-badge" class="badge">Loading Identity...</div>
@@ -74,225 +78,379 @@
         <div id="nav-cars" class="nav-link" onclick="switchTab('cars', this)">🏎️ Manage Cars</div>
         <div id="nav-events" class="nav-link" onclick="switchTab('events', this)">🏁 Manage Events</div>
         
-        <button id="btn-logout" class="btn-logout">Terminate Session</button>
+        <button class="btn-logout" onclick="signOutAuth()">Terminate Session</button>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         
-        <!-- Owner: Access Approvals -->
+        <!-- OWNER APPROVALS -->
         <div id="owner-section" class="section">
             <div class="header">
                 <h1>Access Approvals</h1>
-                <p>Manage incoming admin logins and active sessions.</p>
+                <p>Manage incoming admin logins.</p>
             </div>
             <div class="panel">
-                <h3 style="margin-bottom: 1rem; color: var(--accent);">Pending Requests</h3>
                 <div id="queue-list"><p style="color: var(--text-secondary);">No pending requests.</p></div>
             </div>
         </div>
 
-        <!-- Cars Management -->
+        <!-- MANAGE CARS -->
         <div id="cars-section" class="section">
             <div class="header">
                 <h1>Manage Cars</h1>
-                <p>Add or remove vehicles from the public database.</p>
+                <p>Comprehensive vehicle database management.</p>
             </div>
+            
             <div class="panel">
-                <h3 style="margin-bottom: 1rem;">Add New Vehicle</h3>
-                <form id="form-add-car">
-                    <input type="text" id="car-name" class="input-field" placeholder="Vehicle Name" required>
-                    <input type="text" id="car-class" class="input-field" placeholder="Class (e.g. S-Tier)" required>
-                    <input type="number" id="car-price" class="input-field" placeholder="Estimated Price" required>
-                    <button type="submit" class="btn btn-primary">Publish to Database</button>
+                <h3 id="car-form-title" style="margin-bottom: 1.5rem; font-size: 1.25rem;">+ Add New Vehicle</h3>
+                <form id="form-car">
+                    <input type="hidden" id="car-edit-id">
+                    
+                    <div class="section-divider">Basic Information</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Vehicle Name</label><input type="text" id="c-name" class="input-field" required></div>
+                        <div class="input-group"><label>Class</label><select id="c-class" class="input-field"><option>S-Tier</option><option>A-Tier</option><option>B-Tier</option><option>C-Tier</option></select></div>
+                    </div>
+                    <div class="input-group"><label>Vehicle Image (Upload to replace existing)</label><input type="file" id="c-image" class="input-field" accept="image/*"></div>
+
+                    <div class="section-divider">Variants & Options</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Premium</label><select id="c-prem" class="input-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>COP</label><select id="c-cop" class="input-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Rainbow</label><select id="c-rain" class="input-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Coating</label><select id="c-coat" class="input-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Coating Price (Custom Text)</label><input type="text" id="c-cprice" class="input-field" placeholder="e.g. 25M - 35M"></div>
+                        <div class="input-group"><label>Turbo Available?</label><select id="c-turbo" class="input-field"><option>Available</option><option>Not Available</option></select></div>
+                        <div class="input-group"><label>Without Turbo Available?</label><select id="c-noturbo" class="input-field"><option>Available</option><option>Not Available</option></select></div>
+                    </div>
+
+                    <div class="section-divider">Stage 1-6 Data (Leave blank if N/A)</div>
+                    <div id="stages-container">
+                        <!-- JS will inject S1-S6 inputs here to save HTML space -->
+                    </div>
+
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button type="submit" class="btn btn-primary" id="btn-save-car">Save Vehicle to Database</button>
+                        <button type="button" class="btn btn-danger hidden" id="btn-cancel-car" onclick="resetCarForm()">Cancel Edit</button>
+                    </div>
                 </form>
             </div>
+
             <div class="panel">
-                <h3 style="margin-bottom: 1rem;">Active Vehicles</h3>
-                <div id="car-list"><p style="color: var(--text-secondary);">Loading database...</p></div>
+                <h3 style="margin-bottom: 1.5rem;">Active Vehicles</h3>
+                <div id="admin-car-list"><p style="color: var(--text-secondary);">Loading...</p></div>
             </div>
         </div>
 
-        <!-- Events Management -->
+        <!-- MANAGE EVENTS -->
         <div id="events-section" class="section">
             <div class="header">
                 <h1>Manage Events</h1>
-                <p>Add or remove live events from the public database.</p>
+                <p>Configure live game parameters.</p>
             </div>
+
             <div class="panel">
-                <h3 style="margin-bottom: 1rem;">Create Event</h3>
-                <form id="form-add-event">
-                    <input type="text" id="event-title" class="input-field" placeholder="Event Title" required>
-                    <input type="text" id="event-desc" class="input-field" placeholder="Event Description" required>
-                    <button type="submit" class="btn btn-primary">Publish Event</button>
+                <h3 id="event-form-title" style="margin-bottom: 1.5rem; font-size: 1.25rem;">+ Create Event</h3>
+                <form id="form-event">
+                    <input type="hidden" id="ev-edit-id">
+                    
+                    <div class="section-divider">General Details</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Event Title</label><input type="text" id="e-title" class="input-field" required></div>
+                        <div class="input-group"><label>Game Mode</label><select id="e-mode" class="input-field"><option>Grind</option><option>Race</option><option>Drift</option><option>Other</option></select></div>
+                        <div class="input-group" style="grid-column: span 2;"><label>Description</label><input type="text" id="e-desc" class="input-field" required></div>
+                        <div class="input-group" style="grid-column: span 2;"><label>Event Banner Image</label><input type="file" id="e-image" class="input-field" accept="image/*"></div>
+                    </div>
+
+                    <div class="section-divider">Parameters</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Track</label><input type="text" id="e-track" class="input-field" placeholder="e.g. Off-road Trials"></div>
+                        <div class="input-group"><label>Location / Map</label><input type="text" id="e-map" class="input-field" placeholder="e.g. Mountain Map"></div>
+                        <div class="input-group"><label>Duration</label><input type="text" id="e-dur" class="input-field" placeholder="e.g. 6 Hour(s)"></div>
+                        <div class="input-group"><label>Car Requirement</label><input type="text" id="e-car" class="input-field" placeholder="e.g. Personal or Any"></div>
+                        <div class="input-group"><label>Stage Requirement</label><select id="e-stage" class="input-field"><option>Any</option><option>Stage 1</option><option>Stage 6</option></select></div>
+                    </div>
+
+                    <div class="section-divider">Lobby Rules</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Trade</label><select id="e-trade" class="input-field"><option>Enabled</option><option>Disabled</option></select></div>
+                        <div class="input-group"><label>Fuel</label><select id="e-fuel" class="input-field"><option>Unlimited</option><option>Limited</option></select></div>
+                        <div class="input-group"><label>Mode Status</label><select id="e-status" class="input-field"><option>On</option><option>Off</option></select></div>
+                        <div class="input-group"><label>Character</label><select id="e-char" class="input-field"><option>Off</option><option>On</option></select></div>
+                    </div>
+
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <button type="submit" class="btn btn-primary">Save Event</button>
+                        <button type="button" class="btn btn-danger hidden" id="btn-cancel-event" onclick="resetEventForm()">Cancel Edit</button>
+                    </div>
                 </form>
             </div>
+
             <div class="panel">
-                <h3 style="margin-bottom: 1rem;">Active Events</h3>
-                <div id="event-list"><p style="color: var(--text-secondary);">Loading database...</p></div>
+                <h3 style="margin-bottom: 1.5rem;">Active Events</h3>
+                <div id="admin-event-list"><p style="color: var(--text-secondary);">Loading...</p></div>
             </div>
         </div>
 
     </main>
 
     <script type="module">
-        import { auth, db, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
+        import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
 
-        // Master Settings
+        // Stage Input Generation (S1 - S6)
+        const stagesContainer = document.getElementById('stages-container');
+        for(let i=1; i<=6; i++) {
+            stagesContainer.innerHTML += `
+                <div style="margin-bottom:1rem; padding:1rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-main);">
+                    <div style="color:var(--accent); font-weight:bold; margin-bottom:0.5rem;">STAGE ${i}</div>
+                    <div class="form-grid stages">
+                        <div class="input-group"><label>Est Price</label><input type="text" id="s${i}-p" class="input-field" placeholder="$X"></div>
+                        <div class="input-group"><label>Min Price</label><input type="text" id="s${i}-min" class="input-field" placeholder="$X"></div>
+                        <div class="input-group"><label>Max Price</label><input type="text" id="s${i}-max" class="input-field" placeholder="$X"></div>
+                        <div class="input-group"><label>Speed (No Turbo)</label><input type="text" id="s${i}-snt" class="input-field" placeholder="XXX"></div>
+                        <div class="input-group"><label>Speed (Turbo)</label><input type="text" id="s${i}-st" class="input-field" placeholder="XXX"></div>
+                    </div>
+                </div>
+            `;
+        }
+
         const OWNER_EMAIL = "pennabadicharith@gmail.com";
         const CAR_ADMIN = "admincars@darkstar.com";
         const EVENT_ADMIN = "adminevent@darkstar.com";
+        let currentCars = [];
+        let currentEvents = [];
 
-        // Tab Switcher
-        window.switchTab = function(tabName, element) {
+        window.signOutAuth = () => signOut(auth);
+
+        window.switchTab = function(tab, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabName + '-section').classList.add('active');
-            if(element) element.classList.add('active');
+            document.getElementById(tab + '-section').classList.add('active');
+            if(el) el.classList.add('active');
         };
 
-        // Authentication & Role Check
+        // Auth Logic
         onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = 'login.html';
-                return;
-            }
-
+            if (!user) return window.location.href = 'login.html';
+            
             const badge = document.getElementById('user-badge');
-
-            // 1. OWNER LOGIC
             if (user.email === OWNER_EMAIL) {
                 badge.textContent = "OWNER AUTHORIZED";
                 badge.className = "badge badge-owner";
-                
-                // Show all tabs
                 document.getElementById('nav-owner').style.display = 'block';
                 document.getElementById('nav-cars').style.display = 'block';
                 document.getElementById('nav-events').style.display = 'block';
                 switchTab('owner', document.getElementById('nav-owner'));
-
-                listenForApprovals();
-                loadCarData();
-                loadEventData();
-                return;
+                listenApprovals(); loadCars(); loadEvents();
+            } else {
+                document.getElementById('waiting-room').classList.remove('hidden');
+                const sessRef = doc(db, 'sessions', user.uid);
+                await setDoc(sessRef, { email: user.email, status: 'pending', timestamp: new Date() });
+                onSnapshot(sessRef, (docSnap) => {
+                    if (docSnap.data()?.status === 'approved') {
+                        document.getElementById('waiting-room').classList.add('hidden');
+                        badge.textContent = "ADMIN CLEARANCE";
+                        badge.className = "badge badge-admin";
+                        if (user.email === CAR_ADMIN) { document.getElementById('nav-cars').style.display = 'block'; switchTab('cars', document.getElementById('nav-cars')); loadCars(); }
+                        if (user.email === EVENT_ADMIN) { document.getElementById('nav-events').style.display = 'block'; switchTab('events', document.getElementById('nav-events')); loadEvents(); }
+                    }
+                });
             }
+        });
 
-            // 2. ADMIN LOGIC (Must wait in the room)
-            document.getElementById('waiting-room').classList.remove('hidden');
-            const sessionRef = doc(db, 'sessions', user.uid);
-            await setDoc(sessionRef, { email: user.email, status: 'pending', timestamp: new Date() });
+        // Image Uploader Helper
+        async function uploadImage(file, path) {
+            if(!file) return null;
+            const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+            await uploadBytes(storageRef, file);
+            return await getDownloadURL(storageRef);
+        }
 
-            // Listen for Owner Approval
-            onSnapshot(sessionRef, (docSnap) => {
-                const data = docSnap.data();
-                if (data && data.status === 'approved') {
-                    document.getElementById('waiting-room').classList.add('hidden'); // Unlock!
-                    badge.textContent = "ADMIN CLEARANCE";
-                    badge.className = "badge badge-admin";
+        // CARS CRUD
+        document.getElementById('form-car').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('car-edit-id').value;
+            const btn = document.getElementById('btn-save-car');
+            btn.textContent = "Saving..."; btn.disabled = true;
 
-                    if (user.email === CAR_ADMIN) {
-                        document.getElementById('nav-cars').style.display = 'block';
-                        switchTab('cars', document.getElementById('nav-cars'));
-                        loadCarData();
-                    }
-                    if (user.email === EVENT_ADMIN) {
-                        document.getElementById('nav-events').style.display = 'block';
-                        switchTab('events', document.getElementById('nav-events'));
-                        loadEventData();
-                    }
+            try {
+                let imageUrl = null;
+                const fileInput = document.getElementById('c-image').files[0];
+                if(fileInput) imageUrl = await uploadImage(fileInput, 'cars');
+
+                const carData = {
+                    name: document.getElementById('c-name').value, class: document.getElementById('c-class').value,
+                    premium: document.getElementById('c-prem').value, cop: document.getElementById('c-cop').value,
+                    rainbow: document.getElementById('c-rain').value, coating: document.getElementById('c-coat').value,
+                    coatingPrice: document.getElementById('c-cprice').value, turbo: document.getElementById('c-turbo').value,
+                    noTurbo: document.getElementById('c-noturbo').value,
+                    stages: {}
+                };
+
+                if(imageUrl) carData.imageUrl = imageUrl;
+
+                for(let i=1; i<=6; i++) {
+                    carData.stages[`s${i}`] = {
+                        price: document.getElementById(`s${i}-p`).value, min: document.getElementById(`s${i}-min`).value,
+                        max: document.getElementById(`s${i}-max`).value, tsNoTurbo: document.getElementById(`s${i}-snt`).value,
+                        tsTurbo: document.getElementById(`s${i}-st`).value
+                    };
                 }
-            });
+
+                if(editId) { await updateDoc(doc(db, 'cars', editId), carData); } 
+                else { await addDoc(collection(db, 'cars'), carData); }
+                
+                resetCarForm();
+            } catch (err) { console.error(err); alert("Failed to save."); }
+            btn.textContent = "Save Vehicle to Database"; btn.disabled = false;
         });
 
-        // Logout
-        document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
-        document.getElementById('btn-cancel-wait').addEventListener('click', () => { signOut(auth); });
-
-        // --- OWNER: Manage Approvals ---
-        function listenForApprovals() {
-            onSnapshot(collection(db, 'sessions'), (snapshot) => {
-                const queue = document.getElementById('queue-list');
-                queue.innerHTML = '';
-                let hasPending = false;
+        function loadCars() {
+            onSnapshot(collection(db, 'cars'), (snap) => {
+                const list = document.getElementById('admin-car-list');
+                list.innerHTML = ''; currentCars = [];
+                snap.forEach(doc => { currentCars.push({id: doc.id, ...doc.data()}); });
+                if(currentCars.length === 0) list.innerHTML = '<p>No vehicles in database.</p>';
                 
-                snapshot.forEach(docSnap => {
-                    const req = docSnap.data();
-                    if (req.status === 'pending') {
-                        hasPending = true;
-                        queue.innerHTML += `
-                            <div class="request-item">
-                                <div><strong style="color:white;">${req.email}</strong><br><span style="font-size:0.8rem; color:var(--text-secondary);">Requesting System Access</span></div>
-                                <div>
-                                    <button class="btn btn-success" onclick="acceptAdmin('${docSnap.id}')">Accept</button>
-                                    <button class="btn btn-danger" onclick="rejectAdmin('${docSnap.id}')">Reject</button>
-                                </div>
+                currentCars.forEach(car => {
+                    const img = car.imageUrl ? `<img src="${car.imageUrl}" class="list-img">` : '<div class="list-img"></div>';
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <div style="display:flex; align-items:center;">${img}<div><strong>${car.name}</strong> <span style="color:var(--accent)">[${car.class}]</span></div></div>
+                            <div>
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem;" onclick="editCar('${car.id}')">Edit</button>
+                                <button class="btn btn-danger" style="padding:0.5rem 1rem;" onclick="deleteDocVerify('cars', '${car.id}')">Delete</button>
                             </div>
-                        `;
+                        </div>`;
+                });
+            });
+        }
+
+        window.editCar = function(id) {
+            const car = currentCars.find(c => c.id === id);
+            if(!car) return;
+            document.getElementById('car-edit-id').value = id;
+            document.getElementById('car-form-title').textContent = "✏️ Edit Vehicle: " + car.name;
+            document.getElementById('c-name').value = car.name; document.getElementById('c-class').value = car.class;
+            document.getElementById('c-prem').value = car.premium || 'No'; document.getElementById('c-cop').value = car.cop || 'No';
+            document.getElementById('c-rain').value = car.rainbow || 'No'; document.getElementById('c-coat').value = car.coating || 'No';
+            document.getElementById('c-cprice').value = car.coatingPrice || ''; document.getElementById('c-turbo').value = car.turbo || 'Available';
+            document.getElementById('c-noturbo').value = car.noTurbo || 'Available';
+
+            for(let i=1; i<=6; i++) {
+                const stg = car.stages && car.stages[`s${i}`] ? car.stages[`s${i}`] : {};
+                document.getElementById(`s${i}-p`).value = stg.price || ''; document.getElementById(`s${i}-min`).value = stg.min || '';
+                document.getElementById(`s${i}-max`).value = stg.max || ''; document.getElementById(`s${i}-snt`).value = stg.tsNoTurbo || '';
+                document.getElementById(`s${i}-st`).value = stg.tsTurbo || '';
+            }
+            document.getElementById('btn-cancel-car').classList.remove('hidden');
+            document.getElementById('cars-section').scrollIntoView({behavior: 'smooth'});
+        };
+
+        window.resetCarForm = function() {
+            document.getElementById('form-car').reset();
+            document.getElementById('car-edit-id').value = '';
+            document.getElementById('car-form-title').textContent = "+ Add New Vehicle";
+            document.getElementById('btn-cancel-car').classList.add('hidden');
+        };
+
+        // EVENTS CRUD
+        document.getElementById('form-event').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('ev-edit-id').value;
+            const btn = document.querySelector('#form-event button[type="submit"]');
+            btn.textContent = "Saving..."; btn.disabled = true;
+
+            try {
+                let imageUrl = null;
+                const fileInput = document.getElementById('e-image').files[0];
+                if(fileInput) imageUrl = await uploadImage(fileInput, 'events');
+
+                const evData = {
+                    title: document.getElementById('e-title').value, desc: document.getElementById('e-desc').value,
+                    gameMode: document.getElementById('e-mode').value, track: document.getElementById('e-track').value,
+                    map: document.getElementById('e-map').value, duration: document.getElementById('e-dur').value,
+                    car: document.getElementById('e-car').value, stage: document.getElementById('e-stage').value,
+                    trade: document.getElementById('e-trade').value, fuel: document.getElementById('e-fuel').value,
+                    status: document.getElementById('e-status').value, char: document.getElementById('e-char').value
+                };
+                if(imageUrl) evData.imageUrl = imageUrl;
+
+                if(editId) { await updateDoc(doc(db, 'events', editId), evData); } 
+                else { await addDoc(collection(db, 'events'), evData); }
+                
+                resetEventForm();
+            } catch (err) { console.error(err); alert("Failed to save."); }
+            btn.textContent = "Save Event"; btn.disabled = false;
+        });
+
+        function loadEvents() {
+            onSnapshot(collection(db, 'events'), (snap) => {
+                const list = document.getElementById('admin-event-list');
+                list.innerHTML = ''; currentEvents = [];
+                snap.forEach(doc => { currentEvents.push({id: doc.id, ...doc.data()}); });
+                if(currentEvents.length === 0) list.innerHTML = '<p>No active events.</p>';
+                
+                currentEvents.forEach(ev => {
+                    const img = ev.imageUrl ? `<img src="${ev.imageUrl}" class="list-img">` : '<div class="list-img"></div>';
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <div style="display:flex; align-items:center;">${img}<div><strong>${ev.title}</strong><br><span style="color:var(--text-secondary); font-size:0.85rem;">${ev.gameMode}</span></div></div>
+                            <div>
+                                <button class="btn btn-primary" style="padding:0.5rem 1rem;" onclick="editEvent('${ev.id}')">Edit</button>
+                                <button class="btn btn-danger" style="padding:0.5rem 1rem;" onclick="deleteDocVerify('events', '${ev.id}')">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        window.editEvent = function(id) {
+            const ev = currentEvents.find(e => e.id === id);
+            if(!ev) return;
+            document.getElementById('ev-edit-id').value = id;
+            document.getElementById('event-form-title').textContent = "✏️ Edit Event: " + ev.title;
+            document.getElementById('e-title').value = ev.title; document.getElementById('e-desc').value = ev.desc;
+            document.getElementById('e-mode').value = ev.gameMode; document.getElementById('e-track').value = ev.track || '';
+            document.getElementById('e-map').value = ev.map || ''; document.getElementById('e-dur').value = ev.duration || '';
+            document.getElementById('e-car').value = ev.car || ''; document.getElementById('e-stage').value = ev.stage || 'Any';
+            document.getElementById('e-trade').value = ev.trade || 'Enabled'; document.getElementById('e-fuel').value = ev.fuel || 'Unlimited';
+            document.getElementById('e-status').value = ev.status || 'On'; document.getElementById('e-char').value = ev.char || 'Off';
+            
+            document.getElementById('btn-cancel-event').classList.remove('hidden');
+            document.getElementById('events-section').scrollIntoView({behavior: 'smooth'});
+        };
+
+        window.resetEventForm = function() {
+            document.getElementById('form-event').reset();
+            document.getElementById('ev-edit-id').value = '';
+            document.getElementById('event-form-title').textContent = "+ Create Event";
+            document.getElementById('btn-cancel-event').classList.add('hidden');
+        };
+
+        // DELETE GLOBAL (Requires Confirmation)
+        window.deleteDocVerify = async function(col, id) {
+            if(confirm('WARNING: Are you sure you want to permanently delete this record? This cannot be undone.')) {
+                await deleteDoc(doc(db, col, id));
+            }
+        };
+
+        // OWNER APPROVALS
+        function listenApprovals() {
+            onSnapshot(collection(db, 'sessions'), (snap) => {
+                const q = document.getElementById('queue-list'); q.innerHTML = ''; let h = false;
+                snap.forEach(d => {
+                    const r = d.data();
+                    if(r.status === 'pending') {
+                        h = true;
+                        q.innerHTML += `<div class="list-item"><div><strong>${r.email}</strong></div>
+                        <div><button class="btn btn-primary" onclick="updateDoc(doc(db, 'sessions', '${d.id}'), {status: 'approved'})">Accept</button>
+                        <button class="btn btn-danger" onclick="deleteDoc(doc(db, 'sessions', '${d.id}'))">Reject</button></div></div>`;
                     }
                 });
-                if(!hasPending) queue.innerHTML = '<p style="color: var(--text-secondary);">No pending requests.</p>';
+                if(!h) q.innerHTML = '<p>No pending requests.</p>';
             });
         }
-        window.acceptAdmin = async function(uid) { await updateDoc(doc(db, 'sessions', uid), { status: 'approved' }); };
-        window.rejectAdmin = async function(uid) { await deleteDoc(doc(db, 'sessions', uid)); };
-
-        // --- CARS: Add & Delete ---
-        document.getElementById('form-add-car').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, 'cars'), {
-                name: document.getElementById('car-name').value,
-                class: document.getElementById('car-class').value,
-                price: document.getElementById('car-price').value
-            });
-            e.target.reset(); // Clear form
-        });
-
-        function loadCarData() {
-            onSnapshot(collection(db, 'cars'), (snapshot) => {
-                const list = document.getElementById('car-list');
-                list.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const car = docSnap.data();
-                    list.innerHTML += `
-                        <div class="data-item">
-                            <div><strong>${car.name}</strong> (${car.class}) - $${car.price}</div>
-                            <button class="btn btn-danger" style="padding: 0.5rem 1rem;" onclick="deleteRecord('cars', '${docSnap.id}')">Remove</button>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // --- EVENTS: Add & Delete ---
-        document.getElementById('form-add-event').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await addDoc(collection(db, 'events'), {
-                title: document.getElementById('event-title').value,
-                description: document.getElementById('event-desc').value
-            });
-            e.target.reset(); // Clear form
-        });
-
-        function loadEventData() {
-            onSnapshot(collection(db, 'events'), (snapshot) => {
-                const list = document.getElementById('event-list');
-                list.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const ev = docSnap.data();
-                    list.innerHTML += `
-                        <div class="data-item">
-                            <div><strong>${ev.title}</strong><br><span style="font-size:0.85rem; color:var(--text-secondary);">${ev.description}</span></div>
-                            <button class="btn btn-danger" style="padding: 0.5rem 1rem;" onclick="deleteRecord('events', '${docSnap.id}')">Remove</button>
-                        </div>
-                    `;
-                });
-            });
-        }
-
-        // Global Delete Function
-        window.deleteRecord = async function(collectionName, id) {
-            await deleteDoc(doc(db, collectionName, id));
-        };
     </script>
 </body>
 </html>
