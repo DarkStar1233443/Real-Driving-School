@@ -7,24 +7,27 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         :root {
-            --bg-main: #050505; --bg-sidebar: #0a0a0a; --bg-card: #111111; --border: #262626;
-            --text-primary: #ffffff; --text-secondary: #a3a3a3;
-            --accent: #3B82F6; --success: #10b981; --danger: #ef4444;
+            --bg-main: #09090b; --bg-sidebar: #131316; --bg-card: #18181b; --bg-input: #131316;
+            --border: #27272a; --border-focus: #3b82f6; 
+            --text-primary: #f4f4f5; --text-secondary: #a1a1aa;
+            --accent: #3b82f6; --success: #10b981; --danger: #ef4444;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
-
-        .overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
         .hidden { display: none !important; }
+        
+        /* Overlay */
+        .overlay { position: fixed; inset: 0; background: rgba(9,9,11,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
 
         /* Sidebar Navigation */
-        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; }
-        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
-        .badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; display: inline-block; margin-bottom: 2rem; border: 1px solid; }
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; overflow-y: auto; }
+        .logo { font-size: 1.75rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.05em; }
+        .logo span { color: var(--accent); }
+        .badge { font-size: 0.7rem; padding: 0.35rem 0.6rem; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 2.5rem; border: 1px solid; }
         .badge-owner { background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.3); }
         .badge-admin { background: rgba(59,130,246,0.1); color: var(--accent); border-color: rgba(59,130,246,0.3); }
 
-        .nav-link { display: none; padding: 1rem; color: var(--text-secondary); border-radius: 8px; font-weight: 500; cursor: pointer; margin-bottom: 0.5rem; transition: 0.2s; }
+        .nav-link { display: none; padding: 0.85rem 1rem; color: var(--text-secondary); border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem; transition: 0.2s; }
         .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
         .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.3); }
         
@@ -32,40 +35,46 @@
         .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
         /* Main Content */
-        .main-content { flex: 1; padding: 3rem; overflow-y: auto; }
+        .main-content { flex: 1; padding: 3rem 4rem; overflow-y: auto; }
         .section { display: none; animation: fadeIn 0.3s; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
-        .header p { color: var(--text-secondary); margin-bottom: 2rem; }
+        .header { margin-bottom: 3rem; }
+        .header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+        .header p { color: var(--text-secondary); font-size: 1.1rem; }
 
-        /* Massive Form Grids */
-        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        .form-grid.full { grid-template-columns: 1fr; }
-        .form-grid.stages { grid-template-columns: repeat(5, 1fr); gap: 0.5rem; }
+        /* Sleek Forms */
+        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .form-grid.stages { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
         
-        .input-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.4rem; text-transform: uppercase; }
-        .input-field { width: 100%; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; outline: none; }
-        .input-field:focus { border-color: var(--accent); }
+        .input-group label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+        .input-field, .select-field { width: 100%; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.95rem; outline: none; transition: 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2); }
+        .input-field:focus, .select-field:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
         
-        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; justify-content: center; align-items: center; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { background: #2563eb; }
+        /* Custom Select styling to make it look premium */
+        .select-field { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23A1A1AA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 1rem top 50%; background-size: 0.65rem auto; padding-right: 2.5rem; }
+
+        .btn { padding: 0.85rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.2); }
+        .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
         .btn-danger { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
         .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-success { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+        .btn-success:hover { background: var(--success); color: white; }
 
-        .list-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; background: var(--bg-main); }
-        .list-img { width: 60px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 1rem; background: #1a1a1a; }
+        .list-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); padding: 1.25rem; border-radius: 12px; margin-bottom: 0.75rem; background: var(--bg-main); transition: 0.2s; }
+        .list-item:hover { border-color: var(--border-hover); }
+        .list-img { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 1.5rem; background: #131316; border: 1px solid var(--border); }
         
-        .section-divider { border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 2rem 0 1rem 0; font-size: 1.1rem; color: var(--accent); font-weight: 600; }
+        .section-divider { border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin: 3rem 0 1.5rem 0; font-size: 1.1rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
     <div id="waiting-room" class="overlay hidden">
-        <h2 style="margin-bottom: 0.5rem;">Awaiting Clearance</h2>
+        <h2 style="margin-bottom: 0.5rem; font-size: 2rem;">Awaiting Clearance</h2>
         <p style="color: var(--text-secondary); max-width: 300px; margin-bottom: 2rem;">Waiting for Owner Authorization.</p>
         <button class="btn btn-danger" onclick="signOutAuth()">Cancel Login</button>
     </div>
@@ -85,51 +94,42 @@
         
         <!-- OWNER APPROVALS -->
         <div id="owner-section" class="section">
-            <div class="header">
-                <h1>Access Approvals</h1>
-                <p>Manage incoming admin logins.</p>
-            </div>
-            <div class="panel">
-                <div id="queue-list"><p style="color: var(--text-secondary);">No pending requests.</p></div>
-            </div>
+            <div class="header"><h1>Access Approvals</h1><p>Manage incoming admin logins.</p></div>
+            <div class="panel"><div id="queue-list"><p style="color: var(--text-secondary);">No pending requests.</p></div></div>
         </div>
 
         <!-- MANAGE CARS -->
         <div id="cars-section" class="section">
-            <div class="header">
-                <h1>Manage Cars</h1>
-                <p>Comprehensive vehicle database management.</p>
-            </div>
+            <div class="header"><h1>Manage Cars</h1><p>Comprehensive vehicle database management.</p></div>
             
             <div class="panel">
-                <h3 id="car-form-title" style="margin-bottom: 1.5rem; font-size: 1.25rem;">+ Add New Vehicle</h3>
+                <h3 id="car-form-title" style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 800;">+ Add New Vehicle</h3>
                 <form id="form-car">
                     <input type="hidden" id="car-edit-id">
                     
-                    <div class="section-divider">Basic Information</div>
+                    <div class="section-divider" style="margin-top:0;">Basic Information</div>
                     <div class="form-grid">
                         <div class="input-group"><label>Vehicle Name</label><input type="text" id="c-name" class="input-field" required></div>
-                        <div class="input-group"><label>Class</label><select id="c-class" class="input-field"><option>S-Tier</option><option>A-Tier</option><option>B-Tier</option><option>C-Tier</option></select></div>
+                        <div class="input-group"><label>Class</label><select id="c-class" class="select-field"><option>S-Tier</option><option>A-Tier</option><option>B-Tier</option><option>C-Tier</option></select></div>
                     </div>
-                    <div class="input-group"><label>Vehicle Image (Upload to replace existing)</label><input type="file" id="c-image" class="input-field" accept="image/*"></div>
+                    <div class="input-group"><label>Vehicle Image (Upload to replace existing)</label><input type="file" id="c-image" class="input-field" accept="image/*" style="padding: 0.65rem 1rem;"></div>
 
                     <div class="section-divider">Variants & Options</div>
                     <div class="form-grid">
-                        <div class="input-group"><label>Premium</label><select id="c-prem" class="input-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>COP</label><select id="c-cop" class="input-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>Rainbow</label><select id="c-rain" class="input-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>Coating</label><select id="c-coat" class="input-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Premium</label><select id="c-prem" class="select-field"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                        <div class="input-group hidden" id="c-prem-price-group"><label>Premium Cost</label><input type="text" id="c-premcost" class="input-field" placeholder="e.g. 5,000 RC"></div>
+                        <div class="input-group"><label>COP</label><select id="c-cop" class="select-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Rainbow</label><select id="c-rain" class="select-field"><option>Yes</option><option>No</option></select></div>
+                        <div class="input-group"><label>Coating</label><select id="c-coat" class="select-field"><option>Yes</option><option>No</option></select></div>
                         <div class="input-group"><label>Coating Price (Custom Text)</label><input type="text" id="c-cprice" class="input-field" placeholder="e.g. 25M - 35M"></div>
-                        <div class="input-group"><label>Turbo Available?</label><select id="c-turbo" class="input-field"><option>Available</option><option>Not Available</option></select></div>
-                        <div class="input-group"><label>Without Turbo Available?</label><select id="c-noturbo" class="input-field"><option>Available</option><option>Not Available</option></select></div>
                     </div>
 
                     <div class="section-divider">Stage 1-6 Data (Leave blank if N/A)</div>
                     <div id="stages-container">
-                        <!-- JS will inject S1-S6 inputs here to save HTML space -->
+                        <!-- JS injects S1-S6 inputs -->
                     </div>
 
-                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <div style="margin-top: 2.5rem; display: flex; gap: 1rem;">
                         <button type="submit" class="btn btn-primary" id="btn-save-car">Save Vehicle to Database</button>
                         <button type="button" class="btn btn-danger hidden" id="btn-cancel-car" onclick="resetCarForm()">Cancel Edit</button>
                     </div>
@@ -137,49 +137,71 @@
             </div>
 
             <div class="panel">
-                <h3 style="margin-bottom: 1.5rem;">Active Vehicles</h3>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Active Vehicles</h3>
                 <div id="admin-car-list"><p style="color: var(--text-secondary);">Loading...</p></div>
             </div>
         </div>
 
         <!-- MANAGE EVENTS -->
         <div id="events-section" class="section">
-            <div class="header">
-                <h1>Manage Events</h1>
-                <p>Configure live game parameters.</p>
-            </div>
+            <div class="header"><h1>Manage Events</h1><p>Configure live game parameters and lobbies.</p></div>
 
             <div class="panel">
-                <h3 id="event-form-title" style="margin-bottom: 1.5rem; font-size: 1.25rem;">+ Create Event</h3>
+                <h3 id="event-form-title" style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 800;">+ Create Event</h3>
                 <form id="form-event">
                     <input type="hidden" id="ev-edit-id">
                     
-                    <div class="section-divider">General Details</div>
+                    <div class="section-divider" style="margin-top:0;">General Details</div>
                     <div class="form-grid">
                         <div class="input-group"><label>Event Title</label><input type="text" id="e-title" class="input-field" required></div>
-                        <div class="input-group"><label>Game Mode</label><select id="e-mode" class="input-field"><option>Grind</option><option>Race</option><option>Drift</option><option>Other</option></select></div>
+                        <div class="input-group">
+                            <label>Game Mode</label>
+                            <select id="e-mode" class="select-field">
+                                <option value="Grind">Grind</option><option value="Race">Race</option><option value="Drift">Drift</option><option value="Other">Other...</option>
+                            </select>
+                        </div>
+                        <div class="input-group hidden" id="e-mode-other-group" style="grid-column: span 2;"><label>Custom Game Mode</label><input type="text" id="e-mode-other" class="input-field" placeholder="Type custom mode here..."></div>
+                        
+                        <div class="input-group"><label>Event Status</label><select id="e-status" class="select-field"><option value="Active">Active</option><option value="Upcoming">Upcoming</option></select></div>
+                        <div class="input-group"><label>Event Banner Image</label><input type="file" id="e-image" class="input-field" accept="image/*" style="padding: 0.65rem 1rem;"></div>
+                        
                         <div class="input-group" style="grid-column: span 2;"><label>Description</label><input type="text" id="e-desc" class="input-field" required></div>
-                        <div class="input-group" style="grid-column: span 2;"><label>Event Banner Image</label><input type="file" id="e-image" class="input-field" accept="image/*"></div>
                     </div>
 
-                    <div class="section-divider">Parameters</div>
+                    <div class="section-divider">Schedule (Timestamps)</div>
+                    <div class="form-grid">
+                        <div class="input-group"><label>Start Date & Time</label><input type="datetime-local" id="e-start" class="input-field" required></div>
+                        <div class="input-group"><label>End Date & Time</label><input type="datetime-local" id="e-end" class="input-field" required></div>
+                    </div>
+
+                    <div class="section-divider">Location & Requirements</div>
                     <div class="form-grid">
                         <div class="input-group"><label>Track</label><input type="text" id="e-track" class="input-field" placeholder="e.g. Off-road Trials"></div>
                         <div class="input-group"><label>Location / Map</label><input type="text" id="e-map" class="input-field" placeholder="e.g. Mountain Map"></div>
-                        <div class="input-group"><label>Duration</label><input type="text" id="e-dur" class="input-field" placeholder="e.g. 6 Hour(s)"></div>
-                        <div class="input-group"><label>Car Requirement</label><input type="text" id="e-car" class="input-field" placeholder="e.g. Personal or Any"></div>
-                        <div class="input-group"><label>Stage Requirement</label><select id="e-stage" class="input-field"><option>Any</option><option>Stage 1</option><option>Stage 6</option></select></div>
+                        
+                        <div class="input-group">
+                            <label>Car Requirement</label>
+                            <select id="e-car" class="select-field">
+                                <option value="Any">Any</option><option value="Personal">Personal</option><option value="System Car">System Car</option>
+                            </select>
+                        </div>
+                        <div class="input-group hidden" id="e-stage-group">
+                            <label>Stage Requirement</label>
+                            <select id="e-stage" class="select-field">
+                                <option>Stage 1</option><option>Stage 2</option><option>Stage 3</option><option>Stage 4</option><option>Stage 5</option><option>Stage 6</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="section-divider">Lobby Rules</div>
                     <div class="form-grid">
-                        <div class="input-group"><label>Trade</label><select id="e-trade" class="input-field"><option>Enabled</option><option>Disabled</option></select></div>
-                        <div class="input-group"><label>Fuel</label><select id="e-fuel" class="input-field"><option>Unlimited</option><option>Limited</option></select></div>
-                        <div class="input-group"><label>Mode Status</label><select id="e-status" class="input-field"><option>On</option><option>Off</option></select></div>
-                        <div class="input-group"><label>Character</label><select id="e-char" class="input-field"><option>Off</option><option>On</option></select></div>
+                        <div class="input-group"><label>Trade</label><select id="e-trade" class="select-field"><option>Enabled</option><option>Disabled</option></select></div>
+                        <div class="input-group"><label>Fuel</label><select id="e-fuel" class="select-field"><option>Unlimited</option><option>Limited</option></select></div>
+                        <div class="input-group"><label>Ghost Mode</label><select id="e-ghost" class="select-field"><option>On</option><option>Off</option></select></div>
+                        <div class="input-group"><label>Character</label><select id="e-char" class="select-field"><option>Off</option><option>On</option></select></div>
                     </div>
 
-                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <div style="margin-top: 2.5rem; display: flex; gap: 1rem;">
                         <button type="submit" class="btn btn-primary">Save Event</button>
                         <button type="button" class="btn btn-danger hidden" id="btn-cancel-event" onclick="resetEventForm()">Cancel Edit</button>
                     </div>
@@ -187,7 +209,7 @@
             </div>
 
             <div class="panel">
-                <h3 style="margin-bottom: 1.5rem;">Active Events</h3>
+                <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Active Events</h3>
                 <div id="admin-event-list"><p style="color: var(--text-secondary);">Loading...</p></div>
             </div>
         </div>
@@ -195,30 +217,27 @@
     </main>
 
     <script type="module">
-        import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
+        import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
 
         // Stage Input Generation (S1 - S6)
         const stagesContainer = document.getElementById('stages-container');
         for(let i=1; i<=6; i++) {
             stagesContainer.innerHTML += `
-                <div style="margin-bottom:1rem; padding:1rem; border:1px solid var(--border); border-radius:8px; background:var(--bg-main);">
-                    <div style="color:var(--accent); font-weight:bold; margin-bottom:0.5rem;">STAGE ${i}</div>
+                <div style="margin-bottom:1.5rem; padding:1.5rem; border:1px solid var(--border); border-radius:12px; background:var(--bg-main);">
+                    <div style="color:var(--text-primary); font-weight:800; font-size: 1.1rem; margin-bottom:1rem;">STAGE ${i}</div>
                     <div class="form-grid stages">
                         <div class="input-group"><label>Est Price</label><input type="text" id="s${i}-p" class="input-field" placeholder="$X"></div>
                         <div class="input-group"><label>Min Price</label><input type="text" id="s${i}-min" class="input-field" placeholder="$X"></div>
                         <div class="input-group"><label>Max Price</label><input type="text" id="s${i}-max" class="input-field" placeholder="$X"></div>
-                        <div class="input-group"><label>Speed (No Turbo)</label><input type="text" id="s${i}-snt" class="input-field" placeholder="XXX"></div>
-                        <div class="input-group"><label>Speed (Turbo)</label><input type="text" id="s${i}-st" class="input-field" placeholder="XXX"></div>
+                        <div class="input-group"><label>Speed (Metric)</label><input type="text" id="s${i}-spd" class="input-field" placeholder="XXX"></div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         const OWNER_EMAIL = "pennabadicharith@gmail.com";
         const CAR_ADMIN = "admincars@darkstar.com";
         const EVENT_ADMIN = "adminevent@darkstar.com";
-        let currentCars = [];
-        let currentEvents = [];
+        let currentCars = []; let currentEvents = [];
 
         window.signOutAuth = () => signOut(auth);
 
@@ -229,14 +248,24 @@
             if(el) el.classList.add('active');
         };
 
+        // UI Logic Toggles
+        document.getElementById('c-prem').addEventListener('change', (e) => {
+            document.getElementById('c-prem-price-group').classList.toggle('hidden', e.target.value !== 'Yes');
+        });
+        document.getElementById('e-mode').addEventListener('change', (e) => {
+            document.getElementById('e-mode-other-group').classList.toggle('hidden', e.target.value !== 'Other');
+        });
+        document.getElementById('e-car').addEventListener('change', (e) => {
+            document.getElementById('e-stage-group').classList.toggle('hidden', e.target.value !== 'System Car');
+        });
+
         // Auth Logic
         onAuthStateChanged(auth, async (user) => {
             if (!user) return window.location.href = 'login.html';
             
             const badge = document.getElementById('user-badge');
             if (user.email === OWNER_EMAIL) {
-                badge.textContent = "OWNER AUTHORIZED";
-                badge.className = "badge badge-owner";
+                badge.textContent = "OWNER AUTHORIZED"; badge.className = "badge badge-owner";
                 document.getElementById('nav-owner').style.display = 'block';
                 document.getElementById('nav-cars').style.display = 'block';
                 document.getElementById('nav-events').style.display = 'block';
@@ -249,8 +278,7 @@
                 onSnapshot(sessRef, (docSnap) => {
                     if (docSnap.data()?.status === 'approved') {
                         document.getElementById('waiting-room').classList.add('hidden');
-                        badge.textContent = "ADMIN CLEARANCE";
-                        badge.className = "badge badge-admin";
+                        badge.textContent = "ADMIN CLEARANCE"; badge.className = "badge badge-admin";
                         if (user.email === CAR_ADMIN) { document.getElementById('nav-cars').style.display = 'block'; switchTab('cars', document.getElementById('nav-cars')); loadCars(); }
                         if (user.email === EVENT_ADMIN) { document.getElementById('nav-events').style.display = 'block'; switchTab('events', document.getElementById('nav-events')); loadEvents(); }
                     }
@@ -258,7 +286,6 @@
             }
         });
 
-        // Image Uploader Helper
         async function uploadImage(file, path) {
             if(!file) return null;
             const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
@@ -280,10 +307,9 @@
 
                 const carData = {
                     name: document.getElementById('c-name').value, class: document.getElementById('c-class').value,
-                    premium: document.getElementById('c-prem').value, cop: document.getElementById('c-cop').value,
-                    rainbow: document.getElementById('c-rain').value, coating: document.getElementById('c-coat').value,
-                    coatingPrice: document.getElementById('c-cprice').value, turbo: document.getElementById('c-turbo').value,
-                    noTurbo: document.getElementById('c-noturbo').value,
+                    premium: document.getElementById('c-prem').value, premiumCost: document.getElementById('c-premcost').value,
+                    cop: document.getElementById('c-cop').value, rainbow: document.getElementById('c-rain').value, 
+                    coating: document.getElementById('c-coat').value, coatingPrice: document.getElementById('c-cprice').value,
                     stages: {}
                 };
 
@@ -292,13 +318,12 @@
                 for(let i=1; i<=6; i++) {
                     carData.stages[`s${i}`] = {
                         price: document.getElementById(`s${i}-p`).value, min: document.getElementById(`s${i}-min`).value,
-                        max: document.getElementById(`s${i}-max`).value, tsNoTurbo: document.getElementById(`s${i}-snt`).value,
-                        tsTurbo: document.getElementById(`s${i}-st`).value
+                        max: document.getElementById(`s${i}-max`).value, speed: document.getElementById(`s${i}-spd`).value
                     };
                 }
 
-                if(editId) { await updateDoc(doc(db, 'cars', editId), carData); } 
-                else { await addDoc(collection(db, 'cars'), carData); }
+                if(editId) await updateDoc(doc(db, 'cars', editId), carData); 
+                else await addDoc(collection(db, 'cars'), carData);
                 
                 resetCarForm();
             } catch (err) { console.error(err); alert("Failed to save."); }
@@ -309,17 +334,17 @@
             onSnapshot(collection(db, 'cars'), (snap) => {
                 const list = document.getElementById('admin-car-list');
                 list.innerHTML = ''; currentCars = [];
-                snap.forEach(doc => { currentCars.push({id: doc.id, ...doc.data()}); });
-                if(currentCars.length === 0) list.innerHTML = '<p>No vehicles in database.</p>';
+                snap.forEach(doc => currentCars.push({id: doc.id, ...doc.data()}));
+                if(currentCars.length === 0) list.innerHTML = '<p style="color:var(--text-secondary);">No vehicles in database.</p>';
                 
                 currentCars.forEach(car => {
                     const img = car.imageUrl ? `<img src="${car.imageUrl}" class="list-img">` : '<div class="list-img"></div>';
                     list.innerHTML += `
                         <div class="list-item">
-                            <div style="display:flex; align-items:center;">${img}<div><strong>${car.name}</strong> <span style="color:var(--accent)">[${car.class}]</span></div></div>
-                            <div>
-                                <button class="btn btn-primary" style="padding:0.5rem 1rem;" onclick="editCar('${car.id}')">Edit</button>
-                                <button class="btn btn-danger" style="padding:0.5rem 1rem;" onclick="deleteDocVerify('cars', '${car.id}')">Delete</button>
+                            <div style="display:flex; align-items:center;">${img}<div><strong style="font-size:1.1rem;">${car.name}</strong><br><span style="color:var(--accent); font-size:0.85rem;">[${car.class}]</span></div></div>
+                            <div style="display:flex; gap:0.5rem;">
+                                <button class="btn btn-primary" onclick="editCar('${car.id}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteDocVerify('cars', '${car.id}')">Delete</button>
                             </div>
                         </div>`;
                 });
@@ -331,17 +356,18 @@
             if(!car) return;
             document.getElementById('car-edit-id').value = id;
             document.getElementById('car-form-title').textContent = "✏️ Edit Vehicle: " + car.name;
+            
             document.getElementById('c-name').value = car.name; document.getElementById('c-class').value = car.class;
-            document.getElementById('c-prem').value = car.premium || 'No'; document.getElementById('c-cop').value = car.cop || 'No';
-            document.getElementById('c-rain').value = car.rainbow || 'No'; document.getElementById('c-coat').value = car.coating || 'No';
-            document.getElementById('c-cprice').value = car.coatingPrice || ''; document.getElementById('c-turbo').value = car.turbo || 'Available';
-            document.getElementById('c-noturbo').value = car.noTurbo || 'Available';
+            document.getElementById('c-prem').value = car.premium || 'No'; document.getElementById('c-premcost').value = car.premiumCost || '';
+            document.getElementById('c-cop').value = car.cop || 'No'; document.getElementById('c-rain').value = car.rainbow || 'No'; 
+            document.getElementById('c-coat').value = car.coating || 'No'; document.getElementById('c-cprice').value = car.coatingPrice || '';
+            
+            document.getElementById('c-prem-price-group').classList.toggle('hidden', car.premium !== 'Yes');
 
             for(let i=1; i<=6; i++) {
                 const stg = car.stages && car.stages[`s${i}`] ? car.stages[`s${i}`] : {};
                 document.getElementById(`s${i}-p`).value = stg.price || ''; document.getElementById(`s${i}-min`).value = stg.min || '';
-                document.getElementById(`s${i}-max`).value = stg.max || ''; document.getElementById(`s${i}-snt`).value = stg.tsNoTurbo || '';
-                document.getElementById(`s${i}-st`).value = stg.tsTurbo || '';
+                document.getElementById(`s${i}-max`).value = stg.max || ''; document.getElementById(`s${i}-spd`).value = stg.speed || '';
             }
             document.getElementById('btn-cancel-car').classList.remove('hidden');
             document.getElementById('cars-section').scrollIntoView({behavior: 'smooth'});
@@ -352,6 +378,7 @@
             document.getElementById('car-edit-id').value = '';
             document.getElementById('car-form-title').textContent = "+ Add New Vehicle";
             document.getElementById('btn-cancel-car').classList.add('hidden');
+            document.getElementById('c-prem-price-group').classList.add('hidden');
         };
 
         // EVENTS CRUD
@@ -368,16 +395,18 @@
 
                 const evData = {
                     title: document.getElementById('e-title').value, desc: document.getElementById('e-desc').value,
-                    gameMode: document.getElementById('e-mode').value, track: document.getElementById('e-track').value,
-                    map: document.getElementById('e-map').value, duration: document.getElementById('e-dur').value,
-                    car: document.getElementById('e-car').value, stage: document.getElementById('e-stage').value,
-                    trade: document.getElementById('e-trade').value, fuel: document.getElementById('e-fuel').value,
-                    status: document.getElementById('e-status').value, char: document.getElementById('e-char').value
+                    gameMode: document.getElementById('e-mode').value, customMode: document.getElementById('e-mode-other').value,
+                    status: document.getElementById('e-status').value, track: document.getElementById('e-track').value,
+                    map: document.getElementById('e-map').value, startTime: document.getElementById('e-start').value, 
+                    endTime: document.getElementById('e-end').value, car: document.getElementById('e-car').value, 
+                    stage: document.getElementById('e-stage').value, trade: document.getElementById('e-trade').value, 
+                    fuel: document.getElementById('e-fuel').value, ghostMode: document.getElementById('e-ghost').value, 
+                    char: document.getElementById('e-char').value
                 };
                 if(imageUrl) evData.imageUrl = imageUrl;
 
-                if(editId) { await updateDoc(doc(db, 'events', editId), evData); } 
-                else { await addDoc(collection(db, 'events'), evData); }
+                if(editId) await updateDoc(doc(db, 'events', editId), evData); 
+                else await addDoc(collection(db, 'events'), evData);
                 
                 resetEventForm();
             } catch (err) { console.error(err); alert("Failed to save."); }
@@ -388,17 +417,18 @@
             onSnapshot(collection(db, 'events'), (snap) => {
                 const list = document.getElementById('admin-event-list');
                 list.innerHTML = ''; currentEvents = [];
-                snap.forEach(doc => { currentEvents.push({id: doc.id, ...doc.data()}); });
-                if(currentEvents.length === 0) list.innerHTML = '<p>No active events.</p>';
+                snap.forEach(doc => currentEvents.push({id: doc.id, ...doc.data()}));
+                if(currentEvents.length === 0) list.innerHTML = '<p style="color:var(--text-secondary);">No active events.</p>';
                 
                 currentEvents.forEach(ev => {
                     const img = ev.imageUrl ? `<img src="${ev.imageUrl}" class="list-img">` : '<div class="list-img"></div>';
+                    const statColor = ev.status === 'Upcoming' ? 'var(--warning)' : 'var(--success)';
                     list.innerHTML += `
                         <div class="list-item">
-                            <div style="display:flex; align-items:center;">${img}<div><strong>${ev.title}</strong><br><span style="color:var(--text-secondary); font-size:0.85rem;">${ev.gameMode}</span></div></div>
-                            <div>
-                                <button class="btn btn-primary" style="padding:0.5rem 1rem;" onclick="editEvent('${ev.id}')">Edit</button>
-                                <button class="btn btn-danger" style="padding:0.5rem 1rem;" onclick="deleteDocVerify('events', '${ev.id}')">Delete</button>
+                            <div style="display:flex; align-items:center;">${img}<div><strong style="font-size:1.1rem;">${ev.title}</strong><br><span style="color:${statColor}; font-size:0.85rem; font-weight:600;">${ev.status}</span></div></div>
+                            <div style="display:flex; gap:0.5rem;">
+                                <button class="btn btn-primary" onclick="editEvent('${ev.id}')">Edit</button>
+                                <button class="btn btn-danger" onclick="deleteDocVerify('events', '${ev.id}')">Delete</button>
                             </div>
                         </div>`;
                 });
@@ -410,13 +440,18 @@
             if(!ev) return;
             document.getElementById('ev-edit-id').value = id;
             document.getElementById('event-form-title').textContent = "✏️ Edit Event: " + ev.title;
-            document.getElementById('e-title').value = ev.title; document.getElementById('e-desc').value = ev.desc;
-            document.getElementById('e-mode').value = ev.gameMode; document.getElementById('e-track').value = ev.track || '';
-            document.getElementById('e-map').value = ev.map || ''; document.getElementById('e-dur').value = ev.duration || '';
-            document.getElementById('e-car').value = ev.car || ''; document.getElementById('e-stage').value = ev.stage || 'Any';
-            document.getElementById('e-trade').value = ev.trade || 'Enabled'; document.getElementById('e-fuel').value = ev.fuel || 'Unlimited';
-            document.getElementById('e-status').value = ev.status || 'On'; document.getElementById('e-char').value = ev.char || 'Off';
             
+            document.getElementById('e-title').value = ev.title; document.getElementById('e-desc').value = ev.desc;
+            document.getElementById('e-mode').value = ev.gameMode; document.getElementById('e-mode-other').value = ev.customMode || '';
+            document.getElementById('e-status').value = ev.status || 'Active'; document.getElementById('e-start').value = ev.startTime || '';
+            document.getElementById('e-end').value = ev.endTime || ''; document.getElementById('e-track').value = ev.track || '';
+            document.getElementById('e-map').value = ev.map || ''; document.getElementById('e-car').value = ev.car || 'Any'; 
+            document.getElementById('e-stage').value = ev.stage || 'Stage 1'; document.getElementById('e-trade').value = ev.trade || 'Enabled'; 
+            document.getElementById('e-fuel').value = ev.fuel || 'Unlimited'; document.getElementById('e-ghost').value = ev.ghostMode || 'On'; 
+            document.getElementById('e-char').value = ev.char || 'Off';
+            
+            document.getElementById('e-mode-other-group').classList.toggle('hidden', ev.gameMode !== 'Other');
+            document.getElementById('e-stage-group').classList.toggle('hidden', ev.car !== 'System Car');
             document.getElementById('btn-cancel-event').classList.remove('hidden');
             document.getElementById('events-section').scrollIntoView({behavior: 'smooth'});
         };
@@ -426,13 +461,12 @@
             document.getElementById('ev-edit-id').value = '';
             document.getElementById('event-form-title').textContent = "+ Create Event";
             document.getElementById('btn-cancel-event').classList.add('hidden');
+            document.getElementById('e-mode-other-group').classList.add('hidden');
+            document.getElementById('e-stage-group').classList.add('hidden');
         };
 
-        // DELETE GLOBAL (Requires Confirmation)
         window.deleteDocVerify = async function(col, id) {
-            if(confirm('WARNING: Are you sure you want to permanently delete this record? This cannot be undone.')) {
-                await deleteDoc(doc(db, col, id));
-            }
+            if(confirm('WARNING: Are you sure you want to permanently delete this record?')) await deleteDoc(doc(db, col, id));
         };
 
         // OWNER APPROVALS
@@ -443,12 +477,12 @@
                     const r = d.data();
                     if(r.status === 'pending') {
                         h = true;
-                        q.innerHTML += `<div class="list-item"><div><strong>${r.email}</strong></div>
-                        <div><button class="btn btn-primary" onclick="updateDoc(doc(db, 'sessions', '${d.id}'), {status: 'approved'})">Accept</button>
+                        q.innerHTML += `<div class="list-item"><div><strong style="font-size:1.1rem;">${r.email}</strong></div>
+                        <div style="display:flex; gap:0.5rem;"><button class="btn btn-success" onclick="updateDoc(doc(db, 'sessions', '${d.id}'), {status: 'approved'})">Accept</button>
                         <button class="btn btn-danger" onclick="deleteDoc(doc(db, 'sessions', '${d.id}'))">Reject</button></div></div>`;
                     }
                 });
-                if(!h) q.innerHTML = '<p>No pending requests.</p>';
+                if(!h) q.innerHTML = '<p style="color:var(--text-secondary);">No pending requests.</p>';
             });
         }
     </script>
