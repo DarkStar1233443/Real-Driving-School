@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Portal - Restricted Access</title>
+    <title>Owner Portal - Secure Access</title>
     <style>
-        /* Sleek, dark minimalist UI */
         :root {
             --bg: #09090b;
             --surface: #18181b;
@@ -13,7 +12,6 @@
             --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
             --accent: #3b82f6;
-            --success: #10b981;
             --danger: #ef4444;
         }
         body {
@@ -81,44 +79,12 @@
         .btn-primary:hover {
             opacity: 0.9;
         }
-        
-        /* Device Approval Queue UI */
-        .approval-queue {
-            margin-top: 2.5rem;
-            border-top: 1px solid var(--border);
-            padding-top: 1.5rem;
-        }
-        .device-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            padding: 1rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-        }
-        .device-info {
+        #error-message {
+            color: var(--danger);
             font-size: 0.85rem;
+            text-align: center;
             margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-        .device-info strong {
-            color: var(--text-muted);
-        }
-        .action-row {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .btn-accept { 
-            background: rgba(16, 185, 129, 0.1); 
-            color: var(--success); 
-            border: 1px solid var(--success); 
-        }
-        .btn-reject { 
-            background: rgba(239, 68, 68, 0.1); 
-            color: var(--danger); 
-            border: 1px solid var(--danger); 
-        }
-        .btn-accept:hover, .btn-reject:hover {
-            background: transparent;
+            display: none;
         }
     </style>
 </head>
@@ -127,41 +93,55 @@
     <div class="auth-container">
         <div class="header">
             <h2 style="margin:0 0 0.5rem 0;">System Terminal</h2>
-            <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Secure access requires OTP verification.</p>
+            <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Firebase Encrypted Login</p>
         </div>
 
-        <!-- The OTP Login Form -->
         <form id="owner-login">
             <div class="input-group">
-                <label>System Administrator</label>
-                <input type="email" class="sleek-input" value="pennabadicharith@gmail.com" readonly>
+                <label>Administrator Email</label>
+                <input type="email" id="admin-email" class="sleek-input" required placeholder="admin@domain.com">
             </div>
             
             <div class="input-group">
-                <label>6-Digit Authentication Code</label>
-                <input type="text" class="sleek-input" placeholder="• • • • • •" maxlength="6" required>
+                <label>Access Passphrase</label>
+                <input type="password" id="admin-password" class="sleek-input" required placeholder="••••••••••••">
             </div>
             
-            <button type="submit" class="btn btn-primary">Verify & Initialize</button>
+            <div id="error-message">Invalid credentials. Access denied.</div>
+            
+            <button type="submit" class="btn btn-primary">Authenticate</button>
         </form>
-
-        <!-- The Admin Approval Queue (Would be visible after login) -->
-        <div class="approval-queue">
-            <h3 style="font-size: 1rem; margin-top:0; color: var(--accent);">Pending Access Requests</h3>
-            
-            <div class="device-card">
-                <div class="device-info">
-                    <strong>Alias:</strong> ShadowRacer99<br>
-                    <strong>Device Profile:</strong> iPhone 14 Pro, Safari<br>
-                    <strong>Connection:</strong> Hyderabad, IN
-                </div>
-                <div class="action-row">
-                    <button class="btn btn-accept">Authorize</button>
-                    <button class="btn btn-reject">Deny Access</button>
-                </div>
-            </div>
-        </div>
     </div>
 
+    <!-- Connect to Firebase to securely check the password -->
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './js/firebase-config.js';
+
+        const loginForm = document.getElementById('owner-login');
+        const errorDiv = document.getElementById('error-message');
+
+        // If already logged in, send them straight to the dashboard
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'index.html'; 
+            }
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.style.display = 'none';
+
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-password').value;
+
+            try {
+                // Firebase checks the password securely on its servers
+                await signInWithEmailAndPassword(auth, email, password);
+                window.location.href = 'index.html';
+            } catch (error) {
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
