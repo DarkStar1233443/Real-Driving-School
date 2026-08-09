@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RDS Hub | Control Room</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+        :root {
+            --bg-main: #050505; --bg-sidebar: #0a0a0a; --bg-card: #121212; --border: #262626;
+            --text-primary: #f5f5f5; --text-secondary: #a3a3a3;
+            --accent: #3b82f6; --success: #10b981; --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Full Screen Overlays */
+        .overlay { position: fixed; inset: 0; background: rgba(5,5,5,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
+        .hidden { display: none !important; }
+
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; }
+        .logo { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .badge { font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600; display: inline-block; margin-bottom: 2rem; }
+        .badge-owner { background: rgba(16,185,129,0.2); color: var(--success); }
+        .badge-admin { background: rgba(59,130,246,0.2); color: var(--accent); }
+
+        .nav-link { display: none; padding: 1rem; color: var(--text-secondary); border-radius: 8px; font-weight: 500; cursor: pointer; margin-bottom: 0.5rem; transition: 0.2s; }
+        .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
+        .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
+        
+        .btn-logout { margin-top: auto; padding: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 3rem; overflow-y: auto; }
+        .section { display: none; animation: fadeIn 0.3s; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .header p { color: var(--text-secondary); margin-bottom: 2rem; }
+
+        /* Panels & Forms */
+        .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .input-field { width: 100%; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; outline: none; }
+        .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-success { background: rgba(16,185,129,0.2); color: var(--success); border: 1px solid var(--success); }
+        .btn-danger { background: rgba(239,68,68,0.2); color: var(--danger); border: 1px solid var(--danger); }
+        .btn-success:hover { background: var(--success); color: white; }
+        .btn-danger:hover { background: var(--danger); color: white; }
+
+        .request-item, .data-item { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Waiting Room Overlay for Admins -->
+    <div id="waiting-room" class="overlay hidden">
+        <div style="width: 40px; height: 40px; border: 4px solid var(--border); border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 2rem;"></div>
+        <h2 style="margin-bottom: 0.5rem;">Awaiting Clearance</h2>
+        <p style="color: var(--text-secondary); max-width: 300px; margin-bottom: 2rem;">Your device has been logged. Waiting for the Owner to authorize your session.</p>
+        <button id="btn-cancel-wait" class="btn btn-danger">Cancel Login</button>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">CONTROL <span>ROOM</span></div>
+        <div id="user-badge" class="badge">Loading Identity...</div>
+        
+        <div id="nav-owner" class="nav-link" onclick="switchTab('owner', this)">🛡️ Access Approvals</div>
+        <div id="nav-cars" class="nav-link" onclick="switchTab('cars', this)">🏎️ Manage Cars</div>
+        <div id="nav-events" class="nav-link" onclick="switchTab('events', this)">🏁 Manage Events</div>
+        
+        <button id="btn-logout" class="btn-logout">Terminate Session</button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Owner: Access Approvals -->
+        <div id="owner-section" class="section">
+            <div class="header">
+                <h1>Access Approvals</h1>
+                <p>Manage incoming admin logins and active sessions.</p>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1rem; color: var(--accent);">Pending Requests</h3>
+                <div id="queue-list"><p style="color: var(--text-secondary);">No pending requests.</p></div>
+            </div>
+        </div>
+
+        <!-- Cars Management -->
+        <div id="cars-section" class="section">
+            <div class="header">
+                <h1>Manage Cars</h1>
+                <p>Add or remove vehicles from the public database.</p>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1rem;">Add New Vehicle</h3>
+                <form id="form-add-car">
+                    <input type="text" id="car-name" class="input-field" placeholder="Vehicle Name" required>
+                    <input type="text" id="car-class" class="input-field" placeholder="Class (e.g. S-Tier)" required>
+                    <input type="number" id="car-price" class="input-field" placeholder="Estimated Price" required>
+                    <button type="submit" class="btn btn-primary">Publish to Database</button>
+                </form>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1rem;">Active Vehicles</h3>
+                <div id="car-list"><p style="color: var(--text-secondary);">Loading database...</p></div>
+            </div>
+        </div>
+
+        <!-- Events Management -->
+        <div id="events-section" class="section">
+            <div class="header">
+                <h1>Manage Events</h1>
+                <p>Add or remove live events from the public database.</p>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1rem;">Create Event</h3>
+                <form id="form-add-event">
+                    <input type="text" id="event-title" class="input-field" placeholder="Event Title" required>
+                    <input type="text" id="event-desc" class="input-field" placeholder="Event Description" required>
+                    <button type="submit" class="btn btn-primary">Publish Event</button>
+                </form>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1rem;">Active Events</h3>
+                <div id="event-list"><p style="color: var(--text-secondary);">Loading database...</p></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { auth, db, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
+
+        // Master Settings
+        const OWNER_EMAIL = "pennabadicharith@gmail.com";
+        const CAR_ADMIN = "admincars@darkstar.com";
+        const EVENT_ADMIN = "adminevent@darkstar.com";
+
+        // Tab Switcher
+        window.switchTab = function(tabName, element) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabName + '-section').classList.add('active');
+            if(element) element.classList.add('active');
+        };
+
+        // Authentication & Role Check
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const badge = document.getElementById('user-badge');
+
+            // 1. OWNER LOGIC
+            if (user.email === OWNER_EMAIL) {
+                badge.textContent = "OWNER AUTHORIZED";
+                badge.className = "badge badge-owner";
+                
+                // Show all tabs
+                document.getElementById('nav-owner').style.display = 'block';
+                document.getElementById('nav-cars').style.display = 'block';
+                document.getElementById('nav-events').style.display = 'block';
+                switchTab('owner', document.getElementById('nav-owner'));
+
+                listenForApprovals();
+                loadCarData();
+                loadEventData();
+                return;
+            }
+
+            // 2. ADMIN LOGIC (Must wait in the room)
+            document.getElementById('waiting-room').classList.remove('hidden');
+            const sessionRef = doc(db, 'sessions', user.uid);
+            await setDoc(sessionRef, { email: user.email, status: 'pending', timestamp: new Date() });
+
+            // Listen for Owner Approval
+            onSnapshot(sessionRef, (docSnap) => {
+                const data = docSnap.data();
+                if (data && data.status === 'approved') {
+                    document.getElementById('waiting-room').classList.add('hidden'); // Unlock!
+                    badge.textContent = "ADMIN CLEARANCE";
+                    badge.className = "badge badge-admin";
+
+                    if (user.email === CAR_ADMIN) {
+                        document.getElementById('nav-cars').style.display = 'block';
+                        switchTab('cars', document.getElementById('nav-cars'));
+                        loadCarData();
+                    }
+                    if (user.email === EVENT_ADMIN) {
+                        document.getElementById('nav-events').style.display = 'block';
+                        switchTab('events', document.getElementById('nav-events'));
+                        loadEventData();
+                    }
+                }
+            });
+        });
+
+        // Logout
+        document.getElementById('btn-logout').addEventListener('click', () => { signOut(auth); });
+        document.getElementById('btn-cancel-wait').addEventListener('click', () => { signOut(auth); });
+
+        // --- OWNER: Manage Approvals ---
+        function listenForApprovals() {
+            onSnapshot(collection(db, 'sessions'), (snapshot) => {
+                const queue = document.getElementById('queue-list');
+                queue.innerHTML = '';
+                let hasPending = false;
+                
+                snapshot.forEach(docSnap => {
+                    const req = docSnap.data();
+                    if (req.status === 'pending') {
+                        hasPending = true;
+                        queue.innerHTML += `
+                            <div class="request-item">
+                                <div><strong style="color:white;">${req.email}</strong><br><span style="font-size:0.8rem; color:var(--text-secondary);">Requesting System Access</span></div>
+                                <div>
+                                    <button class="btn btn-success" onclick="acceptAdmin('${docSnap.id}')">Accept</button>
+                                    <button class="btn btn-danger" onclick="rejectAdmin('${docSnap.id}')">Reject</button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                if(!hasPending) queue.innerHTML = '<p style="color: var(--text-secondary);">No pending requests.</p>';
+            });
+        }
+        window.acceptAdmin = async function(uid) { await updateDoc(doc(db, 'sessions', uid), { status: 'approved' }); };
+        window.rejectAdmin = async function(uid) { await deleteDoc(doc(db, 'sessions', uid)); };
+
+        // --- CARS: Add & Delete ---
+        document.getElementById('form-add-car').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'cars'), {
+                name: document.getElementById('car-name').value,
+                class: document.getElementById('car-class').value,
+                price: document.getElementById('car-price').value
+            });
+            e.target.reset(); // Clear form
+        });
+
+        function loadCarData() {
+            onSnapshot(collection(db, 'cars'), (snapshot) => {
+                const list = document.getElementById('car-list');
+                list.innerHTML = '';
+                snapshot.forEach(docSnap => {
+                    const car = docSnap.data();
+                    list.innerHTML += `
+                        <div class="data-item">
+                            <div><strong>${car.name}</strong> (${car.class}) - $${car.price}</div>
+                            <button class="btn btn-danger" style="padding: 0.5rem 1rem;" onclick="deleteRecord('cars', '${docSnap.id}')">Remove</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // --- EVENTS: Add & Delete ---
+        document.getElementById('form-add-event').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'events'), {
+                title: document.getElementById('event-title').value,
+                description: document.getElementById('event-desc').value
+            });
+            e.target.reset(); // Clear form
+        });
+
+        function loadEventData() {
+            onSnapshot(collection(db, 'events'), (snapshot) => {
+                const list = document.getElementById('event-list');
+                list.innerHTML = '';
+                snapshot.forEach(docSnap => {
+                    const ev = docSnap.data();
+                    list.innerHTML += `
+                        <div class="data-item">
+                            <div><strong>${ev.title}</strong><br><span style="font-size:0.85rem; color:var(--text-secondary);">${ev.description}</span></div>
+                            <button class="btn btn-danger" style="padding: 0.5rem 1rem;" onclick="deleteRecord('events', '${docSnap.id}')">Remove</button>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Global Delete Function
+        window.deleteRecord = async function(collectionName, id) {
+            await deleteDoc(doc(db, collectionName, id));
+        };
+    </script>
+</body>
+</html>
