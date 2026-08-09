@@ -5,145 +5,322 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RDS Hub | Public Database</title>
     <style>
-        /* Premium Dark Theme UI */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         
         :root {
-            --bg-main: #050505;
-            --bg-sidebar: #0a0a0a;
-            --bg-card: #121212;
-            --border: #262626;
-            --text-primary: #f5f5f5;
-            --text-secondary: #a3a3a3;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
+            --bg-main: #050505; --bg-sidebar: #0a0a0a; --bg-card: #111111; 
+            --border: #262626; --text-primary: #ffffff; --text-secondary: #a3a3a3;
+            --accent: #3B82F6; --success: #10b981; --danger: #ef4444;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
 
-        /* Sidebar Navigation */
-        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; }
+        /* Sidebar */
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; z-index: 50; }
         .logo { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; margin-bottom: 3rem; }
         .logo span { color: var(--accent); }
-        
-        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.5rem; }
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; margin-bottom: 0.5rem; }
         .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
         .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
-        
-        .admin-gateway { margin-top: auto; text-align: center; font-size: 0.85rem; color: #404040; text-decoration: none; transition: color 0.2s; }
-        .admin-gateway:hover { color: var(--text-secondary); }
 
         /* Main Content */
-        .main-content { flex: 1; padding: 3rem; overflow-y: auto; scroll-behavior: smooth; }
-        .header { margin-bottom: 3rem; }
-        .header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
-        .header p { color: var(--text-secondary); font-size: 1.1rem; }
-
-        /* Content Sections */
-        .section { display: none; animation: fadeIn 0.4s ease; }
+        .main-content { flex: 1; padding: 3rem; overflow-y: auto; position: relative; }
+        .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Data Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
-        .card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, border-color 0.2s; }
+        /* Search & Filters */
+        .tools-bar { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .search-input { flex: 1; min-width: 250px; background: var(--bg-main); border: 1px solid var(--border); color: white; padding: 1rem; border-radius: 8px; font-size: 1rem; outline: none; }
+        .search-input:focus { border-color: var(--accent); }
+        .filter-select { background: var(--bg-main); border: 1px solid var(--border); color: var(--text-secondary); padding: 1rem; border-radius: 8px; outline: none; cursor: pointer; }
+
+        /* Grids & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; cursor: pointer; transition: transform 0.2s, border-color 0.2s; display: flex; flex-direction: column; }
         .card:hover { transform: translateY(-4px); border-color: #404040; }
-        .card h3 { margin-bottom: 0.5rem; font-size: 1.25rem; }
-        .card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; }
+        .card-img { width: 100%; height: 160px; object-fit: cover; background: #1a1a1a; border-bottom: 1px solid var(--border); }
+        .card-body { padding: 1.5rem; flex: 1; }
+        .card h3 { font-size: 1.25rem; margin-bottom: 0.5rem; }
         
-        .loading { color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
+        /* Badges */
+        .badges-wrap { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .badge { font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; border: 1px solid; }
+        .b-blue { background: rgba(59,130,246,0.1); color: var(--accent); border-color: rgba(59,130,246,0.3); }
+        .b-green { background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.3); }
+        .b-red { background: rgba(239,68,68,0.1); color: var(--danger); border-color: rgba(239,68,68,0.3); }
+
+        /* Modal / Details Page */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 100; display: flex; justify-content: center; align-items: flex-start; overflow-y: auto; padding: 3rem 1rem; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border); width: 100%; max-width: 800px; border-radius: 16px; position: relative; overflow: hidden; margin-bottom: 3rem; }
+        .modal-close { position: absolute; top: 1rem; right: 1rem; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: white; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 10; }
+        .modal-header-img { width: 100%; height: 300px; object-fit: cover; background: #1a1a1a; }
+        .modal-body { padding: 2rem; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.9rem; }
+        .data-table th, .data-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+        .data-table th { color: var(--text-secondary); font-weight: 500; }
+        
+        .section-title { font-size: 1.1rem; color: var(--text-secondary); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin: 2rem 0 1rem 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; padding: 1rem; border-right: none; border-bottom: 1px solid var(--border); flex-direction: row; justify-content: space-between; align-items: center; }
+            .logo { margin: 0; }
+            .nav-link { margin: 0; padding: 0.5rem 1rem; }
+            .main-content { padding: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="logo">RDS <span>HUB</span></div>
-        <div class="nav-link active" onclick="switchTab('cars', this)">
-            🏎️ Vehicle Database
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+            <div class="nav-link active" onclick="switchTab('cars', this)">🏎️ Vehicle Database</div>
+            <div class="nav-link" onclick="switchTab('events', this)">🏁 Live Events</div>
         </div>
-        <div class="nav-link" onclick="switchTab('events', this)">
-            🏁 Live Events
-        </div>
-        
-        <!-- Hidden link to the admin portal -->
-        <a href="login.html" class="admin-gateway">Admin Portal</a>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
-        
-        <!-- Cars Section -->
+        <!-- VEHICLE DATABASE -->
         <div id="cars-section" class="section active">
-            <div class="header">
-                <h1>Vehicle Database</h1>
-                <p>Public records of all registered vehicles and stage prices.</p>
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Vehicle Database</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Search registered vehicles and stage metrics.</p>
+            
+            <div class="tools-bar">
+                <input type="text" id="search-cars" class="search-input" placeholder="Search vehicles... (e.g., Dodge, Raptor)">
+                <select id="filter-class" class="filter-select">
+                    <option value="ALL">All Classes</option>
+                    <option value="S-Tier">S-Tier</option>
+                    <option value="A-Tier">A-Tier</option>
+                    <option value="B-Tier">B-Tier</option>
+                    <option value="C-Tier">C-Tier</option>
+                </select>
+                <select id="filter-options" class="filter-select">
+                    <option value="ALL">All Options</option>
+                    <option value="PREMIUM">Premium Only</option>
+                    <option value="COP">COP Only</option>
+                    <option value="RAINBOW">Rainbow Only</option>
+                </select>
             </div>
-            <div class="grid" id="cars-grid">
-                <div class="loading">Fetching data from Firebase...</div>
-            </div>
+
+            <div class="grid" id="cars-grid"><p style="color: var(--text-secondary);">Loading database...</p></div>
         </div>
 
-        <!-- Events Section -->
+        <!-- LIVE EVENTS -->
         <div id="events-section" class="section">
-            <div class="header">
-                <h1>Live Events</h1>
-                <p>Current active grinds and multiplayer track rules.</p>
+            <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Live Events</h1>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">Active grinds and multiplayer track rules.</p>
+            
+            <div class="tools-bar">
+                <input type="text" id="search-events" class="search-input" placeholder="Search events...">
             </div>
-            <div class="grid" id="events-grid">
-                <div class="loading">Fetching data from Firebase...</div>
-            </div>
-        </div>
 
+            <div class="grid" id="events-grid"><p style="color: var(--text-secondary);">Loading events...</p></div>
+        </div>
     </main>
 
-    <!-- UI Logic & Database Connection -->
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="details-modal" onclick="closeModal(event)">
+        <div class="modal-content" id="modal-content">
+            <!-- Injected via JS -->
+        </div>
+    </div>
+
     <script type="module">
         import { db, collection, onSnapshot } from './js/firebase-config.js';
 
-        // Tab Switching Logic
-        window.switchTab = function(tabName, element) {
+        let carsData = [];
+        let eventsData = [];
+
+        window.switchTab = function(tab, el) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.getElementById(tabName + '-section').classList.add('active');
-            element.classList.add('active');
+            document.getElementById(tab + '-section').classList.add('active');
+            el.classList.add('active');
         };
 
-        // Real-time listener for Cars
+        const carGrid = document.getElementById('cars-grid');
+        const eventGrid = document.getElementById('events-grid');
+        const modal = document.getElementById('details-modal');
+        const modalContent = document.getElementById('modal-content');
+        const placeholderImg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Crect width='100%25' height='100%25' fill='%231a1a1a'/%3E%3Ctext x='50%25' y='50%25' fill='%23333' font-family='sans-serif' font-size='14' text-anchor='middle' dy='.3em'%3ENo Image Available%3C/text%3E%3C/svg%3E";
+
+        // Fetch Cars
         onSnapshot(collection(db, 'cars'), (snapshot) => {
-            const grid = document.getElementById('cars-grid');
-            grid.innerHTML = '';
-            if(snapshot.empty) { grid.innerHTML = '<p style="color: #a3a3a3;">No vehicles found in database.</p>'; return; }
-            
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                grid.innerHTML += `
-                    <div class="card">
-                        <h3>${data.name || 'Unknown Vehicle'}</h3>
-                        <p><strong>Class:</strong> ${data.class || 'N/A'}</p>
-                        <p><strong>Price:</strong> $${data.price || '0'}</p>
-                    </div>
-                `;
-            });
+            carsData = [];
+            snapshot.forEach(doc => carsData.push({ id: doc.id, ...doc.data() }));
+            renderCars();
         });
 
-        // Real-time listener for Events
+        // Fetch Events
         onSnapshot(collection(db, 'events'), (snapshot) => {
-            const grid = document.getElementById('events-grid');
-            grid.innerHTML = '';
-            if(snapshot.empty) { grid.innerHTML = '<p style="color: #a3a3a3;">No active events.</p>'; return; }
+            eventsData = [];
+            snapshot.forEach(doc => eventsData.push({ id: doc.id, ...doc.data() }));
+            renderEvents();
+        });
+
+        // Render Cars Grid
+        function renderCars() {
+            const search = document.getElementById('search-cars').value.toLowerCase();
+            const cls = document.getElementById('filter-class').value;
+            const opt = document.getElementById('filter-options').value;
             
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                grid.innerHTML += `
-                    <div class="card" style="border-left: 4px solid var(--accent);">
-                        <h3>${data.title || 'Special Event'}</h3>
-                        <p style="margin-top: 0.5rem;">${data.description || 'Details coming soon.'}</p>
+            carGrid.innerHTML = '';
+            
+            const filtered = carsData.filter(c => {
+                const matchSearch = c.name.toLowerCase().includes(search);
+                const matchClass = cls === 'ALL' || c.class === cls;
+                let matchOpt = true;
+                if (opt === 'PREMIUM') matchOpt = c.premium === 'Yes';
+                if (opt === 'COP') matchOpt = c.cop === 'Yes';
+                if (opt === 'RAINBOW') matchOpt = c.rainbow === 'Yes';
+                return matchSearch && matchClass && matchOpt;
+            });
+
+            if(filtered.length === 0) { carGrid.innerHTML = '<p style="color: var(--text-secondary);">No vehicles found matching your search.</p>'; return; }
+
+            filtered.forEach(car => {
+                const imgUrl = car.imageUrl || placeholderImg;
+                let badges = `<span class="badge b-blue">${car.class || 'Unknown'}</span>`;
+                if(car.premium === 'Yes') badges += `<span class="badge b-green">Premium</span>`;
+                if(car.cop === 'Yes') badges += `<span class="badge b-red">COP</span>`;
+                
+                carGrid.innerHTML += `
+                    <div class="card" onclick="openCarModal('${car.id}')">
+                        <img src="${imgUrl}" class="card-img" alt="${car.name}">
+                        <div class="card-body">
+                            <h3>${car.name}</h3>
+                            <div class="badges-wrap">${badges}</div>
+                        </div>
                     </div>
                 `;
             });
-        });
+        }
+
+        // Render Events Grid
+        function renderEvents() {
+            const search = document.getElementById('search-events').value.toLowerCase();
+            eventGrid.innerHTML = '';
+            
+            const filtered = eventsData.filter(e => e.title.toLowerCase().includes(search));
+            if(filtered.length === 0) { eventGrid.innerHTML = '<p style="color: var(--text-secondary);">No events found.</p>'; return; }
+
+            filtered.forEach(ev => {
+                const imgUrl = ev.imageUrl || placeholderImg;
+                eventGrid.innerHTML += `
+                    <div class="card" onclick="openEventModal('${ev.id}')">
+                        <img src="${imgUrl}" class="card-img" alt="${ev.title}">
+                        <div class="card-body">
+                            <h3>${ev.title}</h3>
+                            <p style="color:var(--text-secondary); font-size: 0.9rem;">${ev.gameMode || 'Event'} • ${ev.map || 'Unknown Map'}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Attach Search Listeners
+        document.getElementById('search-cars').addEventListener('input', renderCars);
+        document.getElementById('filter-class').addEventListener('change', renderCars);
+        document.getElementById('filter-options').addEventListener('change', renderCars);
+        document.getElementById('search-events').addEventListener('input', renderEvents);
+
+        // Open Car Details
+        window.openCarModal = function(id) {
+            const car = carsData.find(c => c.id === id);
+            if(!car) return;
+            
+            const img = car.imageUrl || placeholderImg;
+            
+            let html = `
+                <button class="modal-close" onclick="document.getElementById('details-modal').classList.remove('open')">×</button>
+                <img src="${img}" class="modal-header-img">
+                <div class="modal-body">
+                    <h1 style="font-size:2rem; margin-bottom:0.5rem;">${car.name}</h1>
+                    <div class="badges-wrap" style="margin-bottom: 2rem;">
+                        <span class="badge b-blue">Class: ${car.class || 'N/A'}</span>
+                        <span class="badge ${car.premium === 'Yes' ? 'b-green' : 'b-red'}">Premium: ${car.premium || 'No'}</span>
+                        <span class="badge ${car.cop === 'Yes' ? 'b-green' : 'b-red'}">COP: ${car.cop || 'No'}</span>
+                        <span class="badge ${car.rainbow === 'Yes' ? 'b-green' : 'b-red'}">Rainbow: ${car.rainbow || 'No'}</span>
+                        <span class="badge ${car.coating === 'Yes' ? 'b-green' : 'b-red'}">Coating: ${car.coating || 'No'}</span>
+                    </div>
+
+                    <div class="section-title">Stage Data & Pricing</div>
+                    <table class="data-table">
+                        <tr><th>Stage</th><th>Est. Price</th><th>Min</th><th>Max</th></tr>
+                        ${[1,2,3,4,5,6].map(s => {
+                            const stg = car.stages && car.stages[`s${s}`] ? car.stages[`s${s}`] : {};
+                            if(!stg.price && !stg.min) return '';
+                            return `<tr><td>Stage ${s}</td><td>${stg.price || '-'}</td><td>${stg.min || '-'}</td><td>${stg.max || '-'}</td></tr>`;
+                        }).join('')}
+                    </table>
+
+                    <div class="section-title">Performance Specs</div>
+                    <table class="data-table">
+                        <tr><th>Stage</th><th>Speed (W/O Turbo)</th><th>Speed (W/ Turbo)</th></tr>
+                        ${[1,2,3,4,5,6].map(s => {
+                            const stg = car.stages && car.stages[`s${s}`] ? car.stages[`s${s}`] : {};
+                            if(!stg.tsNoTurbo && !stg.tsTurbo) return '';
+                            return `<tr><td>Stage ${s}</td><td>${stg.tsNoTurbo || '-'}</td><td>${stg.tsTurbo || '-'}</td></tr>`;
+                        }).join('')}
+                    </table>
+
+                    <div class="section-title">Additional Options</div>
+                    <p style="color:var(--text-secondary); line-height: 1.8;">
+                        <strong style="color:white;">Turbo Setup:</strong> ${car.turbo || 'Unknown'} <br>
+                        <strong style="color:white;">Without Turbo Setup:</strong> ${car.noTurbo || 'Unknown'} <br>
+                        <strong style="color:white;">Coating Price Details:</strong> ${car.coatingPrice || 'N/A'}
+                    </p>
+                </div>
+            `;
+            modalContent.innerHTML = html;
+            modal.classList.add('open');
+        }
+
+        // Open Event Details
+        window.openEventModal = function(id) {
+            const ev = eventsData.find(e => e.id === id);
+            if(!ev) return;
+            
+            const img = ev.imageUrl || placeholderImg;
+            
+            let html = `
+                <button class="modal-close" onclick="document.getElementById('details-modal').classList.remove('open')">×</button>
+                <img src="${img}" class="modal-header-img">
+                <div class="modal-body">
+                    <h1 style="font-size:2rem; margin-bottom:0.5rem;">${ev.title}</h1>
+                    <p style="color:var(--text-secondary); margin-bottom: 2rem; font-size:1.1rem;">${ev.description}</p>
+                    
+                    <div class="section-title">Event Configuration</div>
+                    <table class="data-table">
+                        <tr><th>Game Mode</th><td><span class="badge b-blue">${ev.gameMode || 'Any'}</span></td></tr>
+                        <tr><th>Track</th><td style="color:white;">${ev.track || '-'}</td></tr>
+                        <tr><th>Location / Map</th><td style="color:white;">${ev.map || '-'}</td></tr>
+                        <tr><th>Duration</th><td style="color:white;">${ev.duration || '-'}</td></tr>
+                        <tr><th>Vehicle Required</th><td style="color:white;">${ev.car || 'Any'}</td></tr>
+                        <tr><th>Stage Limit</th><td style="color:white;">${ev.stage || 'Any'}</td></tr>
+                    </table>
+
+                    <div class="section-title">Lobby Rules</div>
+                    <div class="badges-wrap">
+                        <span class="badge ${ev.trade === 'Enabled' ? 'b-green' : 'b-red'}">Trade: ${ev.trade || 'N/A'}</span>
+                        <span class="badge ${ev.fuel === 'Unlimited' ? 'b-green' : 'b-blue'}">Fuel: ${ev.fuel || 'N/A'}</span>
+                        <span class="badge ${ev.mode === 'On' ? 'b-green' : 'b-red'}">Mode: ${ev.mode || 'N/A'}</span>
+                        <span class="badge ${ev.character === 'On' ? 'b-green' : 'b-red'}">Character: ${ev.character || 'N/A'}</span>
+                    </div>
+                </div>
+            `;
+            modalContent.innerHTML = html;
+            modal.classList.add('open');
+        }
+
+        window.closeModal = function(e) {
+            if(e.target === modal) modal.classList.remove('open');
+        }
     </script>
 </body>
 </html>
