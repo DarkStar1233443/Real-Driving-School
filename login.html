@@ -3,143 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Owner Portal - Secure Access</title>
+    <title>RDS Hub | Secure Access</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
         :root {
-            --bg: #09090b;
-            --surface: #18181b;
-            --border: #27272a;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --accent: #3b82f6;
-            --danger: #ef4444;
+            --bg-main: #050505; --bg-card: #121212; --border: #262626;
+            --text-primary: #f5f5f5; --text-secondary: #a3a3a3;
+            --accent: #3b82f6; --danger: #ef4444;
         }
-        body {
-            background-color: var(--bg);
-            color: var(--text-main);
-            font-family: 'Inter', system-ui, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 2rem;
-            box-sizing: border-box;
-        }
-        .auth-container {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            padding: 2.5rem;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-        .input-group label {
-            display: block;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-        .sleek-input {
-            width: 100%;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border 0.2s;
-        }
-        .sleek-input:focus {
-            border-color: var(--accent);
-        }
-        .btn {
-            width: 100%;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-            margin-top: 1rem;
-        }
-        .btn-primary:hover {
-            opacity: 0.9;
-        }
-        #error-message {
-            color: var(--danger);
-            font-size: 0.85rem;
-            text-align: center;
-            margin-bottom: 1rem;
-            display: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-primary); display: flex; justify-content: center; align-items: center; height: 100vh; }
+        
+        .auth-card { background-color: var(--bg-card); border: 1px solid var(--border); padding: 3rem; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .auth-card h2 { margin-bottom: 0.5rem; font-weight: 800; font-size: 1.5rem; text-align: center; }
+        .auth-card p { color: var(--text-secondary); font-size: 0.9rem; text-align: center; margin-bottom: 2rem; }
+        
+        .input-group { margin-bottom: 1.2rem; }
+        .input-group label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .input-field { width: 100%; background: var(--bg-main); border: 1px solid var(--border); color: var(--text-primary); padding: 0.8rem; border-radius: 8px; outline: none; transition: border 0.2s; }
+        .input-field:focus { border-color: var(--accent); }
+        
+        .btn-submit { width: 100%; background: var(--accent); color: white; border: none; padding: 0.9rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; margin-top: 1rem; }
+        .btn-submit:hover { opacity: 0.9; }
+        
+        #error-msg { color: var(--danger); font-size: 0.85rem; text-align: center; margin-top: 1rem; display: none; }
     </style>
 </head>
 <body>
 
-    <div class="auth-container">
-        <div class="header">
-            <h2 style="margin:0 0 0.5rem 0;">System Terminal</h2>
-            <p style="margin:0; font-size:0.9rem; color:var(--text-muted);">Firebase Encrypted Login</p>
-        </div>
-
-        <form id="owner-login">
+    <div class="auth-card">
+        <h2>System Terminal</h2>
+        <p>Restricted access for authorized personnel only.</p>
+        
+        <form id="login-form">
             <div class="input-group">
-                <label>Administrator Email</label>
-                <input type="email" id="admin-email" class="sleek-input" required placeholder="admin@domain.com">
+                <label>Admin Email</label>
+                <input type="email" id="email" class="input-field" required placeholder="admin@darkstar.com">
             </div>
-            
             <div class="input-group">
-                <label>Access Passphrase</label>
-                <input type="password" id="admin-password" class="sleek-input" required placeholder="••••••••••••">
+                <label>Passphrase</label>
+                <input type="password" id="password" class="input-field" required placeholder="••••••••">
             </div>
-            
-            <div id="error-message">Invalid credentials. Access denied.</div>
-            
-            <button type="submit" class="btn btn-primary">Authenticate</button>
+            <button type="submit" class="btn-submit">Authenticate</button>
+            <div id="error-msg">Invalid credentials or system error.</div>
         </form>
     </div>
 
-    <!-- Connect to Firebase to securely check the password -->
     <script type="module">
         import { auth, signInWithEmailAndPassword, onAuthStateChanged } from './js/firebase-config.js';
 
-        const loginForm = document.getElementById('owner-login');
-        const errorDiv = document.getElementById('error-message');
-
-        // If already logged in, send them straight to the dashboard
+        // Redirect if already logged in
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'index.html'; 
-            }
+            if (user) window.location.href = 'admin.html';
         });
 
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            errorDiv.style.display = 'none';
-
-            const email = document.getElementById('admin-email').value;
-            const password = document.getElementById('admin-password').value;
-
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-msg');
+            
             try {
-                // Firebase checks the password securely on its servers
-                await signInWithEmailAndPassword(auth, email, password);
-                window.location.href = 'index.html';
+                await signInWithEmailAndPassword(auth, email, pass);
+                window.location.href = 'admin.html';
             } catch (error) {
-                errorDiv.style.display = 'block';
+                errorMsg.style.display = 'block';
             }
         });
     </script>
