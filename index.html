@@ -3,251 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RDS Hub - Secure Central Dashboard</title>
+    <title>RDS Hub | Public Database</title>
     <style>
+        /* Premium Dark Theme UI */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
+        
         :root {
-            --bg-base: #09090b; --bg-surface: #18181b; --bg-surface-hover: #27272a;
-            --border: #3f3f46; --text-main: #f4f4f5; --text-muted: #a1a1aa;
-            --accent: #3b82f6; --danger: #ef4444; --success: #10b981;
+            --bg-main: #050505;
+            --bg-sidebar: #0a0a0a;
+            --bg-card: #121212;
+            --border: #262626;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a3a3a3;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-base); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
-        
-        /* Sidebar */
-        .sidebar { width: 260px; background: var(--bg-surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem; z-index: 1000; }
-        .brand { font-size: 1.5rem; font-weight: 800; margin-bottom: 2.5rem; }
-        .brand span { color: var(--accent); }
-        .nav-btn { background: transparent; border: none; color: var(--text-muted); text-align: left; padding: 0.75rem 1rem; border-radius: 8px; cursor: pointer; display: flex; gap: 0.75rem; margin-bottom: 0.5rem; }
-        .nav-btn:hover { background: var(--bg-surface-hover); color: var(--text-main); }
-        .nav-btn.active { background: var(--accent); color: #fff; }
-        
-        /* Main Content */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 2rem; position: relative; }
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
-        .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Glass Cards */
-        .glass-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-success { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
-        .btn-danger { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-        .input-dark { width: 100%; padding: 0.5rem; background: var(--bg-base); border: 1px solid var(--border); color: white; border-radius: 4px; margin-bottom: 1rem; }
 
-        /* Auth Overlays */
-        #auth-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: flex; justify-content: center; align-items: center; }
-        .hidden { display: none !important; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar Navigation */
+        .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2rem; display: flex; flex-direction: column; }
+        .logo { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; margin-bottom: 3rem; }
+        .logo span { color: var(--accent); }
+        
+        .nav-link { display: flex; align-items: center; gap: 1rem; padding: 1rem; color: var(--text-secondary); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.2s ease; cursor: pointer; margin-bottom: 0.5rem; }
+        .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
+        .nav-link.active { background-color: rgba(59, 130, 246, 0.1); color: var(--accent); border: 1px solid rgba(59, 130, 246, 0.2); }
+        
+        .admin-gateway { margin-top: auto; text-align: center; font-size: 0.85rem; color: #404040; text-decoration: none; transition: color 0.2s; }
+        .admin-gateway:hover { color: var(--text-secondary); }
+
+        /* Main Content */
+        .main-content { flex: 1; padding: 3rem; overflow-y: auto; scroll-behavior: smooth; }
+        .header { margin-bottom: 3rem; }
+        .header h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+        .header p { color: var(--text-secondary); font-size: 1.1rem; }
+
+        /* Content Sections */
+        .section { display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Data Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .card { background-color: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, border-color 0.2s; }
+        .card:hover { transform: translateY(-4px); border-color: #404040; }
+        .card h3 { margin-bottom: 0.5rem; font-size: 1.25rem; }
+        .card p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; }
+        
+        .loading { color: var(--accent); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; }
     </style>
 </head>
 <body>
 
-    <!-- Login & Waiting Room Overlay -->
-    <div id="auth-overlay">
-        <div class="glass-card" style="width: 350px; text-align: center;" id="login-box">
-            <h2 style="margin-bottom: 1rem;">System Access</h2>
-            <input type="email" id="login-email" class="input-dark" placeholder="Email Address">
-            <input type="password" id="login-pass" class="input-dark" placeholder="Password">
-            <p id="login-error" style="color: var(--danger); font-size: 0.8rem; margin-bottom: 1rem;" class="hidden">Invalid credentials.</p>
-            <button class="btn btn-primary" style="width: 100%;" id="btn-login">Authenticate</button>
-            <button class="btn" style="width: 100%; margin-top: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-muted);" onclick="closeAuth()">Continue as Guest</button>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">RDS <span>HUB</span></div>
+        <div class="nav-link active" onclick="switchTab('cars', this)">
+            🏎️ Vehicle Database
+        </div>
+        <div class="nav-link" onclick="switchTab('events', this)">
+            🏁 Live Events
         </div>
         
-        <div class="glass-card hidden" style="width: 350px; text-align: center;" id="waiting-box">
-            <h2 style="color: var(--accent); margin-bottom: 1rem;">Pending Approval</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Your device has been logged. Waiting for the Owner to authorize your session...</p>
-            <div style="margin-top: 1.5rem; width: 30px; height: 30px; border: 3px solid var(--border); border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; margin-inline: auto;"></div>
-            <button class="btn" style="margin-top: 1.5rem; color: var(--danger);" id="btn-cancel-wait">Cancel Request</button>
-        </div>
-    </div>
-    <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-        <div class="brand">RDS <span>HUB</span></div>
-        <p id="user-role-badge" style="color: var(--accent); font-size: 0.8rem; margin-bottom: 1rem; text-transform: uppercase;"></p>
-        
-        <button class="nav-btn active" onclick="switchView('home')" id="nav-home">🏠 Overview</button>
-        <button class="nav-btn" onclick="switchView('cars')" id="nav-cars">🏎️ Vehicle Database</button>
-        <button class="nav-btn" onclick="switchView('events')" id="nav-events">🏁 Live Events</button>
-        
-        <button class="nav-btn hidden" onclick="switchView('owner')" id="nav-owner" style="color: var(--success); border: 1px solid var(--success);">🛡️ Owner Portal</button>
-        
-        <button class="btn" style="margin-top: auto; background: var(--bg-surface-hover); color: white;" id="btn-auth-toggle">Login</button>
+        <!-- Hidden link to the admin portal -->
+        <a href="login.html" class="admin-gateway">Admin Portal</a>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="main-content">
         
-        <!-- HOME -->
-        <section id="home-view" class="view-section active">
-            <h1>Welcome to RDS Hub</h1>
-            <p style="color: var(--text-muted);">Select a database on the left to begin.</p>
-        </section>
-
-        <!-- CARS -->
-        <section id="cars-view" class="view-section">
-            <h1>Vehicle Database</h1>
-            <div class="glass-card hidden admin-tool" id="car-admin-tools">
-                <h3 style="color: var(--accent);">+ Add New Car (Admin Only)</h3>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">You have permission to edit the car list.</p>
-                <!-- Add car form inputs would go here -->
+        <!-- Cars Section -->
+        <div id="cars-section" class="section active">
+            <div class="header">
+                <h1>Vehicle Database</h1>
+                <p>Public records of all registered vehicles and stage prices.</p>
             </div>
-            <div class="glass-card"><p>Public Car Grid Loads Here</p></div>
-        </section>
-
-        <!-- EVENTS -->
-        <section id="events-view" class="view-section">
-            <h1>Live Events</h1>
-            <div class="glass-card hidden admin-tool" id="event-admin-tools">
-                <h3 style="color: var(--accent);">+ Create Event (Admin Only)</h3>
-                <p style="color: var(--text-muted); font-size: 0.85rem;">You have permission to manage events.</p>
-                <!-- Add event form inputs would go here -->
+            <div class="grid" id="cars-grid">
+                <div class="loading">Fetching data from Firebase...</div>
             </div>
-            <div class="glass-card"><p>Public Events Grid Loads Here</p></div>
-        </section>
+        </div>
 
-        <!-- OWNER DASHBOARD -->
-        <section id="owner-view" class="view-section">
-            <h1>Master Terminal</h1>
-            <p style="color: var(--text-muted); margin-bottom: 2rem;">Manage incoming access requests and active sessions.</p>
-            
-            <div class="glass-card">
-                <h3 style="color: var(--accent); margin-bottom: 1rem;">Pending Access Requests</h3>
-                <div id="approval-queue">
-                    <p style="color: var(--text-muted); font-size: 0.9rem;">No pending requests.</p>
-                </div>
+        <!-- Events Section -->
+        <div id="events-section" class="section">
+            <div class="header">
+                <h1>Live Events</h1>
+                <p>Current active grinds and multiplayer track rules.</p>
             </div>
-        </section>
+            <div class="grid" id="events-grid">
+                <div class="loading">Fetching data from Firebase...</div>
+            </div>
+        </div>
 
     </main>
 
+    <!-- UI Logic & Database Connection -->
     <script type="module">
-        import { auth, db, signInWithEmailAndPassword, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc } from './js/firebase-config.js';
+        import { db, collection, onSnapshot } from './js/firebase-config.js';
 
-        const OWNER_EMAIL = "pennabadicharith@gmail.com";
-        const CAR_ADMIN = "admincars@darkstar.com";
-        const EVENT_ADMIN = "adminevent@darkstar.com";
-
-        // UI Elements
-        const overlay = document.getElementById('auth-overlay');
-        const loginBox = document.getElementById('login-box');
-        const waitingBox = document.getElementById('waiting-box');
-        const authBtn = document.getElementById('btn-auth-toggle');
-        const roleBadge = document.getElementById('user-role-badge');
-        let sessionUnsubscribe = null;
-
-        // View Switcher Logic
-        window.switchView = function(viewName) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(viewName + '-view').classList.add('active');
-            document.getElementById('nav-' + viewName).classList.add('active');
+        // Tab Switching Logic
+        window.switchTab = function(tabName, element) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabName + '-section').classList.add('active');
+            element.classList.add('active');
         };
 
-        window.closeAuth = function() { overlay.classList.add('hidden'); }
-
-        // Login Logic
-        document.getElementById('btn-login').addEventListener('click', async () => {
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-pass').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, pass);
-                document.getElementById('login-error').classList.add('hidden');
-            } catch (error) {
-                document.getElementById('login-error').classList.remove('hidden');
-            }
-        });
-
-        // Logout Logic
-        authBtn.addEventListener('click', () => {
-            if (auth.currentUser) { signOut(auth).then(() => window.location.reload()); } 
-            else { overlay.classList.remove('hidden'); loginBox.classList.remove('hidden'); waitingBox.classList.add('hidden'); }
-        });
-
-        // The Security Core
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                authBtn.textContent = "Login";
-                roleBadge.textContent = "Guest Access";
-                document.querySelectorAll('.admin-tool').forEach(el => el.classList.add('hidden'));
-                return;
-            }
-
-            authBtn.textContent = "Logout";
-
-            // If it is the Owner
-            if (user.email === OWNER_EMAIL) {
-                roleBadge.textContent = "Owner Authorized";
-                overlay.classList.add('hidden');
-                document.getElementById('nav-owner').classList.remove('hidden');
-                document.querySelectorAll('.admin-tool').forEach(el => el.classList.remove('hidden'));
-                listenForRequests();
-                return;
-            }
-
-            // If it is a Sub-Admin, put them in the Waiting Room
-            loginBox.classList.add('hidden');
-            waitingBox.classList.remove('hidden');
+        // Real-time listener for Cars
+        onSnapshot(collection(db, 'cars'), (snapshot) => {
+            const grid = document.getElementById('cars-grid');
+            grid.innerHTML = '';
+            if(snapshot.empty) { grid.innerHTML = '<p style="color: #a3a3a3;">No vehicles found in database.</p>'; return; }
             
-            // Create a pending request in Firestore
-            const sessionRef = doc(db, 'sessions', user.uid);
-            await setDoc(sessionRef, { email: user.email, status: 'pending', timestamp: new Date() });
-
-            // Listen to see if the Owner clicked 'Accept'
-            sessionUnsubscribe = onSnapshot(sessionRef, (docSnap) => {
-                const data = docSnap.data();
-                if (data && data.status === 'approved') {
-                    overlay.classList.add('hidden'); // Unlock screen
-                    
-                    if (user.email === CAR_ADMIN) {
-                        roleBadge.textContent = "Car Admin";
-                        document.getElementById('nav-cars').style.display = 'block';
-                        document.getElementById('car-admin-tools').classList.remove('hidden');
-                        document.getElementById('nav-events').style.display = 'none'; // Hide events
-                        switchView('cars');
-                    } 
-                    
-                    if (user.email === EVENT_ADMIN) {
-                        roleBadge.textContent = "Event Admin";
-                        document.getElementById('nav-events').style.display = 'block';
-                        document.getElementById('event-admin-tools').classList.remove('hidden');
-                        document.getElementById('nav-cars').style.display = 'none'; // Hide cars
-                        switchView('events');
-                    }
-                }
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                grid.innerHTML += `
+                    <div class="card">
+                        <h3>${data.name || 'Unknown Vehicle'}</h3>
+                        <p><strong>Class:</strong> ${data.class || 'N/A'}</p>
+                        <p><strong>Price:</strong> $${data.price || '0'}</p>
+                    </div>
+                `;
             });
         });
 
-        // Owner functionality: Listen to the queue and approve
-        function listenForRequests() {
-            onSnapshot(collection(db, 'sessions'), (snapshot) => {
-                const queue = document.getElementById('approval-queue');
-                queue.innerHTML = '';
-                snapshot.forEach(docSnap => {
-                    const req = docSnap.data();
-                    if (req.status === 'pending') {
-                        queue.innerHTML += `
-                            <div style="display:flex; justify-content:space-between; align-items:center; border: 1px solid var(--border); padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
-                                <div><strong style="color:var(--text-main);">${req.email}</strong><br><span style="font-size:0.8rem; color:var(--text-muted);">Requesting System Access</span></div>
-                                <div>
-                                    <button class="btn btn-success" onclick="acceptAdmin('${docSnap.id}')">Accept</button>
-                                    <button class="btn btn-danger" onclick="rejectAdmin('${docSnap.id}')">Reject</button>
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-                if(queue.innerHTML === '') queue.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No pending requests.</p>';
+        // Real-time listener for Events
+        onSnapshot(collection(db, 'events'), (snapshot) => {
+            const grid = document.getElementById('events-grid');
+            grid.innerHTML = '';
+            if(snapshot.empty) { grid.innerHTML = '<p style="color: #a3a3a3;">No active events.</p>'; return; }
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                grid.innerHTML += `
+                    <div class="card" style="border-left: 4px solid var(--accent);">
+                        <h3>${data.title || 'Special Event'}</h3>
+                        <p style="margin-top: 0.5rem;">${data.description || 'Details coming soon.'}</p>
+                    </div>
+                `;
             });
-        }
-
-        // Global functions for the Owner buttons
-        window.acceptAdmin = async function(uid) { await updateDoc(doc(db, 'sessions', uid), { status: 'approved' }); };
-        window.rejectAdmin = async function(uid) { await deleteDoc(doc(db, 'sessions', uid)); };
-        
-        // Cancel Wait
-        document.getElementById('btn-cancel-wait').addEventListener('click', () => { signOut(auth).then(() => window.location.reload()); });
+        });
     </script>
 </body>
 </html>
