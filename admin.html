@@ -23,6 +23,7 @@
         .logo span { color: var(--accent); }
         .badge { font-size: 0.7rem; padding: 0.35rem 0.6rem; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; margin-bottom: 2.5rem; border: 1px solid; }
         .badge-owner { background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.3); }
+        .badge-admin { background: rgba(59,130,246,0.1); color: var(--accent); border-color: rgba(59,130,246,0.3); }
 
         .nav-link { display: none; padding: 0.85rem 1rem; color: var(--text-secondary); border-radius: 8px; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem; transition: 0.2s; }
         .nav-link:hover { background-color: var(--border); color: var(--text-primary); }
@@ -89,6 +90,7 @@
     </aside>
 
     <main class="main-content">
+        
         <!-- OWNER APPROVALS -->
         <div id="owner-section" class="section">
             <div class="header"><h1>Access Approvals</h1><p>Manage incoming admin logins.</p></div>
@@ -150,7 +152,7 @@
         <!-- MANAGE EVENTS -->
         <div id="events-section" class="section">
             <div class="header"><h1>Manage Events</h1><p>Configure live game parameters and lobbies.</p></div>
-            <!-- Event form is identical to previous version but matching the new styles -->
+            
             <div class="panel">
                 <h3 id="event-form-title" style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 800;">+ Create Event</h3>
                 <form id="form-event">
@@ -200,7 +202,7 @@
             
             <div class="panel">
                 <h3 id="guide-form-title" style="margin-bottom: 2rem; font-size: 1.5rem; font-weight: 800;">+ Publish Guide</h3>
-                <p class="helper-text">💡 Video files can be large. Please wait a moment after clicking "Save" for the upload to complete.</p>
+                <p class="helper-text">💡 Video files can be large. Please wait a moment after clicking "Publish" for the upload to complete.</p>
                 <form id="form-guide">
                     <input type="hidden" id="g-edit-id">
                     <div class="form-grid">
@@ -223,7 +225,7 @@
     <script type="module">
         import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
 
-        // Stage Inputs Generation
+        // Dynamic Stage Inputs Generation
         const stagesContainer = document.getElementById('stages-container');
         for(let i=1; i<=6; i++) {
             stagesContainer.innerHTML += `
@@ -239,6 +241,8 @@
         }
 
         const OWNER_EMAIL = "pennabadicharith@gmail.com";
+        const CAR_ADMIN = "admincars@darkstar.com";
+        const EVENT_ADMIN = "adminevent@darkstar.com";
         let currentCars = []; let currentEvents = []; let currentGuides = [];
 
         window.signOutAuth = () => signOut(auth);
@@ -263,9 +267,11 @@
             }
         }, true);
 
+        // UI Listeners
         document.getElementById('e-mode').addEventListener('change', (e) => document.getElementById('e-mode-other-group').classList.toggle('hidden', e.target.value !== 'Other'));
         document.getElementById('e-car').addEventListener('change', (e) => document.getElementById('e-stage-group').classList.toggle('hidden', e.target.value !== 'System Car'));
 
+        // Firebase Auth State
         onAuthStateChanged(auth, async (user) => {
             if (!user) return window.location.href = 'login.html';
             const badge = document.getElementById('user-badge');
@@ -276,10 +282,21 @@
                 switchTab('owner', document.getElementById('nav-owner'));
                 listenApprovals(); loadCars(); loadEvents(); loadGuides();
             } else {
-                // Admin logic remains identical
+                document.getElementById('waiting-room').classList.remove('hidden');
+                const sessRef = doc(db, 'sessions', user.uid);
+                await setDoc(sessRef, { email: user.email, status: 'pending', timestamp: new Date() });
+                onSnapshot(sessRef, (docSnap) => {
+                    if (docSnap.data()?.status === 'approved') {
+                        document.getElementById('waiting-room').classList.add('hidden');
+                        badge.textContent = "ADMIN CLEARANCE"; badge.className = "badge badge-admin";
+                        if (user.email === CAR_ADMIN) { document.getElementById('nav-cars').style.display = 'block'; switchTab('cars', document.getElementById('nav-cars')); loadCars(); }
+                        if (user.email === EVENT_ADMIN) { document.getElementById('nav-events').style.display = 'block'; switchTab('events', document.getElementById('nav-events')); loadEvents(); }
+                    }
+                });
             }
         });
 
+        // Universal Upload Function
         async function uploadMedia(file, path) {
             if(!file) return null;
             const storageRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
@@ -287,12 +304,12 @@
             return await getDownloadURL(storageRef);
         }
 
-        // --- CARS ---
+        // --- CARS CORE LOGIC ---
         document.getElementById('form-car').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('car-edit-id').value;
             const btn = document.getElementById('btn-save-car');
-            btn.textContent = "Saving to Database..."; btn.disabled = true;
+            btn.textContent = "Uploading... Please wait."; btn.disabled = true;
 
             try {
                 let imageUrl = null;
@@ -305,6 +322,7 @@
                     rainbow: document.getElementById('c-rain').value, coating: document.getElementById('c-coat').value,
                     stages: {}
                 };
+                
                 if(imageUrl) carData.imageUrl = imageUrl;
 
                 for(let i=1; i<=6; i++) {
@@ -316,8 +334,13 @@
 
                 if(editId) await updateDoc(doc(db, 'cars', editId), carData); 
                 else await addDoc(collection(db, 'cars'), carData);
+                
                 resetCarForm();
-            } catch (err) { alert("Failed to save."); }
+                alert("Vehicle saved successfully!");
+            } catch (err) { 
+                console.error("Upload Error: ", err);
+                alert("Error: " + err.message + "\n\n(If this says Permission Denied, your Storage Rules are blocking the file upload!)");
+            }
             btn.textContent = "Save Vehicle to Database"; btn.disabled = false;
         });
 
@@ -344,6 +367,7 @@
             document.getElementById('c-name').value = car.name; document.getElementById('c-class').value = car.class || '';
             document.getElementById('c-prem').value = car.premium || ''; document.getElementById('c-cop').value = car.cop || ''; 
             document.getElementById('c-rain').value = car.rainbow || ''; document.getElementById('c-coat').value = car.coating || ''; 
+            
             for(let i=1; i<=6; i++) {
                 const stg = car.stages && car.stages[`s${i}`] ? car.stages[`s${i}`] : {};
                 document.getElementById(`s${i}-min`).value = stg.min || ''; document.getElementById(`s${i}-max`).value = stg.max || '';
@@ -352,9 +376,10 @@
             document.getElementById('btn-cancel-car').classList.remove('hidden');
             document.getElementById('cars-section').scrollIntoView({behavior: 'smooth'});
         };
+        
         window.resetCarForm = function() { document.getElementById('form-car').reset(); document.getElementById('car-edit-id').value = ''; document.getElementById('car-form-title').textContent = "+ Add New Vehicle"; document.getElementById('btn-cancel-car').classList.add('hidden'); };
 
-        // --- GUIDES ---
+        // --- GUIDES CORE LOGIC ---
         document.getElementById('form-guide').addEventListener('submit', async (e) => {
             e.preventDefault();
             const editId = document.getElementById('g-edit-id').value;
@@ -373,8 +398,13 @@
 
                 if(editId) await updateDoc(doc(db, 'guides', editId), gData); 
                 else await addDoc(collection(db, 'guides'), gData);
+                
                 resetGuideForm();
-            } catch (err) { alert("Failed to publish guide. Ensure video is not too large."); }
+                alert("Guide published successfully!");
+            } catch (err) { 
+                console.error("Guide Upload Error: ", err);
+                alert("Error: " + err.message + "\n\n(Check Storage rules or ensure the video file isn't too massive.)"); 
+            }
             btn.textContent = "Publish Guide"; btn.disabled = false;
         });
 
@@ -394,14 +424,15 @@
         }
         window.resetGuideForm = function() { document.getElementById('form-guide').reset(); };
 
-        // --- EVENTS ---
+        // --- EVENTS CORE LOGIC ---
         document.getElementById('form-event').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btn-save-ev'); btn.textContent = "Saving..."; btn.disabled = true;
+            const btn = document.getElementById('btn-save-ev'); btn.textContent = "Uploading... Please wait"; btn.disabled = true;
             try {
                 let imageUrl = null;
                 const fileInput = document.getElementById('e-image').files[0];
                 if(fileInput) imageUrl = await uploadMedia(fileInput, 'events');
+                
                 const evData = {
                     title: document.getElementById('e-title').value, desc: document.getElementById('e-desc').value, gameMode: document.getElementById('e-mode').value, customMode: document.getElementById('e-mode-other').value,
                     status: document.getElementById('e-status').value, track: document.getElementById('e-track').value, map: document.getElementById('e-map').value, startTime: document.getElementById('e-start').value, 
@@ -409,10 +440,16 @@
                     fuel: document.getElementById('e-fuel').value, ghostMode: document.getElementById('e-ghost').value, char: document.getElementById('e-char').value
                 };
                 if(imageUrl) evData.imageUrl = imageUrl;
+                
                 const editId = document.getElementById('ev-edit-id').value;
                 if(editId) await updateDoc(doc(db, 'events', editId), evData); else await addDoc(collection(db, 'events'), evData);
+                
                 resetEventForm();
-            } catch (err) {}
+                alert("Event saved successfully!");
+            } catch (err) {
+                console.error("Event Upload Error: ", err);
+                alert("Error: " + err.message);
+            }
             btn.textContent = "Save Event"; btn.disabled = false;
         });
 
@@ -420,6 +457,7 @@
             onSnapshot(collection(db, 'events'), (snap) => {
                 const list = document.getElementById('admin-event-list'); list.innerHTML = ''; currentEvents = [];
                 snap.forEach(doc => currentEvents.push({id: doc.id, ...doc.data()}));
+                if(currentEvents.length === 0) list.innerHTML = '<p style="color:var(--text-secondary);">No active events.</p>';
                 currentEvents.forEach(ev => {
                     list.innerHTML += `
                         <div class="list-item">
@@ -429,11 +467,48 @@
                 });
             });
         }
-        window.editEvent = function(id) { /* Identity edit logic here */ document.getElementById('events-section').scrollIntoView(); };
-        window.resetEventForm = function() { document.getElementById('form-event').reset(); };
+        
+        window.editEvent = function(id) {
+            const ev = currentEvents.find(e => e.id === id); if(!ev) return;
+            document.getElementById('ev-edit-id').value = id;
+            document.getElementById('event-form-title').textContent = "✏️ Edit Event: " + ev.title;
+            
+            document.getElementById('e-title').value = ev.title; document.getElementById('e-desc').value = ev.desc;
+            document.getElementById('e-mode').value = ev.gameMode; document.getElementById('e-mode-other').value = ev.customMode || '';
+            document.getElementById('e-status').value = ev.status || 'Active'; document.getElementById('e-start').value = ev.startTime || '';
+            document.getElementById('e-end').value = ev.endTime || ''; document.getElementById('e-track').value = ev.track || '';
+            document.getElementById('e-map').value = ev.map || ''; document.getElementById('e-car').value = ev.car || 'Any'; 
+            document.getElementById('e-stage').value = ev.stage || 'Stage 1'; document.getElementById('e-trade').value = ev.trade || 'Enabled'; 
+            document.getElementById('e-fuel').value = ev.fuel || 'Unlimited'; document.getElementById('e-ghost').value = ev.ghostMode || 'On'; 
+            document.getElementById('e-char').value = ev.char || 'Off';
+            
+            document.getElementById('e-mode-other-group').classList.toggle('hidden', ev.gameMode !== 'Other');
+            document.getElementById('e-stage-group').classList.toggle('hidden', ev.car !== 'System Car');
+            document.getElementById('btn-cancel-event').classList.remove('hidden');
+            document.getElementById('events-section').scrollIntoView({behavior: 'smooth'});
+        };
+        
+        window.resetEventForm = function() { document.getElementById('form-event').reset(); document.getElementById('ev-edit-id').value = ''; document.getElementById('event-form-title').textContent = "+ Create Event"; document.getElementById('btn-cancel-event').classList.add('hidden'); document.getElementById('e-mode-other-group').classList.add('hidden'); document.getElementById('e-stage-group').classList.add('hidden'); };
 
+        // Global Delete
         window.deleteDocVerify = async function(col, id) { if(confirm('WARNING: Permanently delete this record?')) await deleteDoc(doc(db, col, id)); };
-        function listenApprovals() { /* Approval logic */ }
+
+        // Approvals
+        function listenApprovals() {
+            onSnapshot(collection(db, 'sessions'), (snap) => {
+                const q = document.getElementById('queue-list'); q.innerHTML = ''; let h = false;
+                snap.forEach(d => {
+                    const r = d.data();
+                    if(r.status === 'pending') {
+                        h = true;
+                        q.innerHTML += `<div class="list-item"><div><strong style="font-size:1.1rem;">${r.email}</strong></div>
+                        <div style="display:flex; gap:0.5rem;"><button class="btn btn-success" onclick="updateDoc(doc(db, 'sessions', '${d.id}'), {status: 'approved'})">Accept</button>
+                        <button class="btn btn-danger" onclick="deleteDoc(doc(db, 'sessions', '${d.id}'))">Reject</button></div></div>`;
+                    }
+                });
+                if(!h) q.innerHTML = '<p style="color:var(--text-secondary);">No pending requests.</p>';
+            });
+        }
     </script>
 </body>
 </html>
