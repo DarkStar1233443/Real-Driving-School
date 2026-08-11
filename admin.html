@@ -16,10 +16,8 @@
         body { background-color: var(--bg-main); color: var(--text-primary); display: flex; height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
         
-        /* Overlay */
         .overlay { position: fixed; inset: 0; background: rgba(9,9,11,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; flex-direction: column; text-align: center; }
 
-        /* Sidebar Navigation */
         .sidebar { width: 280px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border); padding: 2.5rem 1.5rem; display: flex; flex-direction: column; overflow-y: auto; }
         .logo { font-size: 1.75rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -0.05em; }
         .logo span { color: var(--accent); }
@@ -34,7 +32,6 @@
         .btn-logout { margin-top: auto; padding: 1rem; background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.2s; }
         .btn-logout:hover { background: var(--danger); color: white; border-color: var(--danger); }
 
-        /* Main Content */
         .main-content { flex: 1; padding: 3rem 4rem; overflow-y: auto; }
         .section { display: none; animation: fadeIn 0.3s; }
         .section.active { display: block; }
@@ -44,7 +41,6 @@
         .header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
         .header p { color: var(--text-secondary); font-size: 1.1rem; }
 
-        /* Sleek Forms */
         .panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
         .form-grid.stages { grid-template-columns: repeat(4, 1fr); gap: 1rem; }
@@ -52,8 +48,6 @@
         .input-group label { display: block; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
         .input-field, .select-field { width: 100%; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.95rem; outline: none; transition: 0.2s; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2); }
         .input-field:focus, .select-field:focus { border-color: var(--border-focus); box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
-        
-        /* Custom Select styling to make it look premium */
         .select-field { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23A1A1AA%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 1rem top 50%; background-size: 0.65rem auto; padding-right: 2.5rem; }
 
         .btn { padding: 0.85rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
@@ -68,7 +62,8 @@
         .list-item:hover { border-color: var(--border-hover); }
         .list-img { width: 80px; height: 50px; object-fit: cover; border-radius: 6px; margin-right: 1.5rem; background: #131316; border: 1px solid var(--border); }
         
-        .section-divider { border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin: 3rem 0 1.5rem 0; font-size: 1.1rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
+        .section-divider { border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin: 3rem 0 1rem 0; font-size: 1.1rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; }
+        .helper-text { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -114,17 +109,18 @@
                     </div>
                     <div class="input-group"><label>Vehicle Image (Upload to replace existing)</label><input type="file" id="c-image" class="input-field" accept="image/*" style="padding: 0.65rem 1rem;"></div>
 
-                    <div class="section-divider">Variants & Options</div>
+                    <div class="section-divider" style="border-bottom:none; padding-bottom:0;">Variants & Options (Added Cost)</div>
+                    <p class="helper-text">💡 <b>Smart Inputs:</b> Type <b>k</b> for thousands (e.g. 92k = 92,000), <b>m</b> for millions (2.5m = 2,500,000). Small numbers automatically default to millions (5 = 5,000,000). Leave blank if not available.</p>
+                    
                     <div class="form-grid">
-                        <div class="input-group"><label>Premium</label><select id="c-prem" class="select-field"><option value="No">No</option><option value="Yes">Yes</option></select></div>
-                        <div class="input-group hidden" id="c-prem-price-group"><label>Premium Cost</label><input type="text" id="c-premcost" class="input-field" placeholder="e.g. 5,000 RC"></div>
-                        <div class="input-group"><label>COP</label><select id="c-cop" class="select-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>Rainbow</label><select id="c-rain" class="select-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>Coating</label><select id="c-coat" class="select-field"><option>Yes</option><option>No</option></select></div>
-                        <div class="input-group"><label>Coating Price (Custom Text)</label><input type="text" id="c-cprice" class="input-field" placeholder="e.g. 25M - 35M"></div>
+                        <div class="input-group"><label>Premium Cost</label><input type="text" id="c-prem" class="input-field price-input" placeholder="Cost..."></div>
+                        <div class="input-group"><label>COP Cost</label><input type="text" id="c-cop" class="input-field price-input" placeholder="Cost..."></div>
+                        <div class="input-group"><label>Rainbow Cost</label><input type="text" id="c-rain" class="input-field price-input" placeholder="Cost..."></div>
+                        <div class="input-group"><label>Coating Cost</label><input type="text" id="c-coat" class="input-field price-input" placeholder="Cost..."></div>
                     </div>
 
-                    <div class="section-divider">Stage 1-6 Data (Leave blank if N/A)</div>
+                    <div class="section-divider" style="border-bottom:none; padding-bottom:0;">Stage 1-6 Data</div>
+                    <p class="helper-text">💡 Smart Inputs active here too. Leave blank if N/A.</p>
                     <div id="stages-container">
                         <!-- JS injects S1-S6 inputs -->
                     </div>
@@ -219,16 +215,16 @@
     <script type="module">
         import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, signOut, collection, doc, setDoc, onSnapshot, updateDoc, deleteDoc, addDoc } from './js/firebase-config.js';
 
-        // Stage Input Generation (S1 - S6)
+        // Stage Input Generation (S1 - S6) - Includes the smart 'price-input' class
         const stagesContainer = document.getElementById('stages-container');
         for(let i=1; i<=6; i++) {
             stagesContainer.innerHTML += `
                 <div style="margin-bottom:1.5rem; padding:1.5rem; border:1px solid var(--border); border-radius:12px; background:var(--bg-main);">
                     <div style="color:var(--text-primary); font-weight:800; font-size: 1.1rem; margin-bottom:1rem;">STAGE ${i}</div>
                     <div class="form-grid stages">
-                        <div class="input-group"><label>Est Price</label><input type="text" id="s${i}-p" class="input-field" placeholder="$X"></div>
-                        <div class="input-group"><label>Min Price</label><input type="text" id="s${i}-min" class="input-field" placeholder="$X"></div>
-                        <div class="input-group"><label>Max Price</label><input type="text" id="s${i}-max" class="input-field" placeholder="$X"></div>
+                        <div class="input-group"><label>Est Price</label><input type="text" id="s${i}-p" class="input-field price-input" placeholder="Cost..."></div>
+                        <div class="input-group"><label>Min Price</label><input type="text" id="s${i}-min" class="input-field price-input" placeholder="Cost..."></div>
+                        <div class="input-group"><label>Max Price</label><input type="text" id="s${i}-max" class="input-field price-input" placeholder="Cost..."></div>
                         <div class="input-group"><label>Speed (Metric)</label><input type="text" id="s${i}-spd" class="input-field" placeholder="XXX"></div>
                     </div>
                 </div>`;
@@ -248,10 +244,28 @@
             if(el) el.classList.add('active');
         };
 
+        // --- THE AUTO FORMATTER LOGIC ---
+        document.addEventListener('blur', function(e) {
+            if(e.target && e.target.classList.contains('price-input')) {
+                let val = e.target.value.toLowerCase().replace(/,/g, '').replace(/\$/g, '').replace(/\s/g, '');
+                if (!val) return;
+                
+                let num = parseFloat(val);
+                if (isNaN(num)) return;
+
+                if (val.includes('k')) {
+                    num = num * 1000;
+                } else if (val.includes('m')) {
+                    num = num * 1000000;
+                } else if (num < 1000) {
+                    num = num * 1000000; // Auto-defaults to millions if they just type '5'
+                }
+                
+                e.target.value = num.toLocaleString('en-US');
+            }
+        }, true);
+
         // UI Logic Toggles
-        document.getElementById('c-prem').addEventListener('change', (e) => {
-            document.getElementById('c-prem-price-group').classList.toggle('hidden', e.target.value !== 'Yes');
-        });
         document.getElementById('e-mode').addEventListener('change', (e) => {
             document.getElementById('e-mode-other-group').classList.toggle('hidden', e.target.value !== 'Other');
         });
@@ -307,9 +321,9 @@
 
                 const carData = {
                     name: document.getElementById('c-name').value, class: document.getElementById('c-class').value,
-                    premium: document.getElementById('c-prem').value, premiumCost: document.getElementById('c-premcost').value,
+                    premium: document.getElementById('c-prem').value,
                     cop: document.getElementById('c-cop').value, rainbow: document.getElementById('c-rain').value, 
-                    coating: document.getElementById('c-coat').value, coatingPrice: document.getElementById('c-cprice').value,
+                    coating: document.getElementById('c-coat').value,
                     stages: {}
                 };
 
@@ -358,11 +372,9 @@
             document.getElementById('car-form-title').textContent = "✏️ Edit Vehicle: " + car.name;
             
             document.getElementById('c-name').value = car.name; document.getElementById('c-class').value = car.class;
-            document.getElementById('c-prem').value = car.premium || 'No'; document.getElementById('c-premcost').value = car.premiumCost || '';
-            document.getElementById('c-cop').value = car.cop || 'No'; document.getElementById('c-rain').value = car.rainbow || 'No'; 
-            document.getElementById('c-coat').value = car.coating || 'No'; document.getElementById('c-cprice').value = car.coatingPrice || '';
-            
-            document.getElementById('c-prem-price-group').classList.toggle('hidden', car.premium !== 'Yes');
+            document.getElementById('c-prem').value = car.premium || '';
+            document.getElementById('c-cop').value = car.cop || ''; document.getElementById('c-rain').value = car.rainbow || ''; 
+            document.getElementById('c-coat').value = car.coating || ''; 
 
             for(let i=1; i<=6; i++) {
                 const stg = car.stages && car.stages[`s${i}`] ? car.stages[`s${i}`] : {};
@@ -378,7 +390,6 @@
             document.getElementById('car-edit-id').value = '';
             document.getElementById('car-form-title').textContent = "+ Add New Vehicle";
             document.getElementById('btn-cancel-car').classList.add('hidden');
-            document.getElementById('c-prem-price-group').classList.add('hidden');
         };
 
         // EVENTS CRUD
